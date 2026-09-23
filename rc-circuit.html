@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RC 充电电路 · 交互演示</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px;
+    background: #f1f5f9; color: #0f172a;
+    font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    min-height: 100vh; display: flex; justify-content: center;
+  }
+  .app {
+    width: min(1240px, 100%);
+    background: #fff; border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(15,23,42,0.06);
+    padding: 24px 26px 28px;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 980px) { .app { grid-template-columns: 1fr; } }
+
+  h1 { font-size: 19px; margin: 0 0 4px; font-weight: 650; letter-spacing: -0.2px; }
+  .subtitle { color: #64748b; font-size: 13.5px; margin-bottom: 18px; line-height: 1.6; }
+
+  .section-title {
+    font-size: 11.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; color: #94a3b8;
+    margin-bottom: 10px; padding-bottom: 6px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .ctrl-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 12.5px; margin-bottom: 3px;
+  }
+  .ctrl-row .label { color: #475569; }
+  .ctrl-row .value {
+    font-weight: 650; color: #2563eb;
+    font-variant-numeric: tabular-nums;
+    font-family: "SF Mono", Consolas, monospace;
+    font-size: 12px;
+  }
+  input[type=range] {
+    width: 100%; height: 18px; accent-color: #2563eb;
+    cursor: pointer; margin-bottom: 12px;
+  }
+
+  .btn-row { display: flex; gap: 8px; margin-top: 6px; }
+  .btn {
+    flex: 1; padding: 8px; border-radius: 8px; cursor: pointer;
+    font-size: 12.5px; font-family: inherit;
+    background: #fff; border: 1px solid #2563eb; color: #2563eb;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: #eaf2fe; }
+  .btn.ghost { border-color: #cbd5e1; color: #64748b; }
+  .btn.ghost:hover { background: #f8fafc; }
+
+  .canvas-wrap {
+    background: #fafbfc; border: 1px solid #e2e8f0;
+    border-radius: 12px; padding: 8px;
+    margin-bottom: 16px;
+  }
+  canvas { width: 100%; height: auto; display: block; border-radius: 8px; }
+
+  .readout {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  .card {
+    background: #f8fafc; border: 1px solid #e2e8f0;
+    border-radius: 10px; padding: 10px 12px;
+  }
+  .card .k { font-size: 11.5px; color: #64748b; margin-bottom: 4px; }
+  .card .v {
+    font-size: 15px; font-weight: 650; color: #2563eb;
+    font-variant-numeric: tabular-nums;
+    font-family: "SF Mono", Consolas, monospace;
+  }
+  .card.red .v { color: #e8453c; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div>
+    <h1>RC 充电电路</h1>
+    <div class="subtitle">调整参数，观察电容电压与充电电流的动态变化</div>
+
+    <div class="section-title">参数调节</div>
+
+    <div class="ctrl-row">
+      <span class="label">电阻 R</span>
+      <span class="value" id="rVal">5.0 kΩ</span>
+    </div>
+    <input type="range" id="rIn" min="1" max="50" step="0.5" value="5">
+
+    <div class="ctrl-row">
+      <span class="label">电容 C</span>
+      <span class="value" id="cVal">10.0 µF</span>
+    </div>
+    <input type="range" id="cIn" min="1" max="100" step="1" value="10">
+
+    <div class="ctrl-row">
+      <span class="label">电源 U</span>
+      <span class="value" id="uVal">10 V</span>
+    </div>
+    <input type="range" id="uIn" min="1" max="20" step="1" value="10">
+
+    <div class="btn-row">
+      <button class="btn" id="playBtn">▶ 播放</button>
+      <button class="btn ghost" id="resetBtn">↺ 重置</button>
+    </div>
+  </div>
+
+  <div>
+    <div class="canvas-wrap">
+      <canvas id="cv"></canvas>
+    </div>
+
+    <div class="readout">
+      <div class="card">
+        <div class="k">时间常数 τ = RC</div>
+        <div class="v" id="tauOut">—</div>
+      </div>
+      <div class="card">
+        <div class="k">u_C(τ) ≈ 0.632U</div>
+        <div class="v" id="uTau">—</div>
+      </div>
+      <div class="card">
+        <div class="k">u_C(5τ) ≈ 0.993U</div>
+        <div class="v" id="u5">—</div>
+      </div>
+      <div class="card red">
+        <div class="k">i(0) = U / R</div>
+        <div class="v" id="i0Out">—</div>
+      </div>
+      <div class="card red">
+        <div class="k">i(τ) ≈ 0.368 i(0)</div>
+        <div class="v" id="iTau">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================== 基础设置 ===================== */
+const cv  = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const W = 940, H = 440;
+const $ = id => document.getElementById(id);
+
+/* 电路图布局 */
+const circuit = {
+  left: 70, right: 310, top: 110, bottom: 330, midY: 220
+};
+
+/* 曲线图布局 */
+const CHART_X = 380;
+const CHART_W = 520;
+const CHART_Y = 50;
+const CHART_H = 350;
+
+/* ===================== 状态 ===================== */
+const state = {
+  R: 5, C: 10, U: 10,
+  tau: 0, I0: 0,
+  T_MIN: 0, T_MAX: 1,
+  progress: 0,          // 0~1 归一化时间进度
+  t: 0,                 // 实际时间（秒）
+  playing: false,
+  arrowPhase: 0
+};
+
+/* ===================== 坐标映射 ===================== */
+const X  = t => CHART_X + ((t - state.T_MIN) / (state.T_MAX - state.T_MIN)) * CHART_W;
+const YV = u => CHART_Y + CHART_H - (u / state.U) * CHART_H;
+const YI = i => CHART_Y + CHART_H - (i / state.I0) * CHART_H;
+
+/* ===================== 画布适配 ===================== */
+function setupCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  cv.width  = Math.round(W * dpr);
+  cv.height = Math.round(H * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+/* ===================== 计算 ===================== */
+function compute() {
+  state.tau = state.R * 1000 * state.C * 1e-6;   // 秒
+  state.I0  = state.U / state.R;                 // mA
+  state.T_MIN = -0.3 * state.tau;
+  state.T_MAX =  5.0 * state.tau;
+  state.t = state.T_MIN + state.progress * (state.T_MAX - state.T_MIN);
+}
+
+/* ===================== 格式化 ===================== */
+function fmtTime(s) {
+  const a = Math.abs(s);
+  if (a < 1e-6) return '0 s';
+  if (a < 1e-3) return (s * 1e6).toFixed(a < 1e-5 ? 1 : 0) + ' µs';
+  if (a < 1)    return (s * 1000).toFixed(a < 0.01 ? 2 : 1) + ' ms';
+  return s.toFixed(2) + ' s';
+}
+function fmtCurrent(mA) {
+  const a = Math.abs(mA);
+  if (a < 1e-3) return (mA * 1e6).toFixed(1) + ' nA';
+  if (a < 1)    return (mA * 1000).toFixed(a < 0.1 ? 2 : 1) + ' µA';
+  return mA.toFixed(2) + ' mA';
+}
+function niceTimeStep(span) {
+  const raw = span / 6;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const norm = raw / mag;
+  let nice;
+  if (norm < 1.5) nice = 1;
+  else if (norm < 3.5) nice = 2;
+  else if (norm < 7.5) nice = 5;
+  else nice = 10;
+  return nice * mag;
+}
+
+/* ===================== 绘图基元 ===================== */
+function line(x1, y1, x2, y2) {
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+}
+
+function drawDot(x, y, r, color) {
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+
+function drawArrowAt(x, y, angle, size, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  ctx.beginPath();
+  ctx.moveTo(size * 0.75, 0);
+  ctx.lineTo(-size * 0.5, -size * 0.55);
+  ctx.lineTo(-size * 0.5,  size * 0.55);
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawResistorV(cx, cy, w, h) {
+  ctx.save();
+  ctx.fillStyle = '#ffffff';
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.rect(cx - w/2, cy - h/2, w, h);
+  ctx.fill(); ctx.stroke();
+  ctx.restore();
+}
+
+function drawCapacitorH(cx, cy) {
+  ctx.save();
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 2.2;
+  line(cx - 12, cy - 16, cx - 12, cy + 16);
+  line(cx + 12, cy - 16, cx + 12, cy + 16);
+  ctx.restore();
+}
+
+function drawBatteryV(cx, cy) {
+  ctx.save();
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 2;
+  // 长线（+）在上
+  line(cx - 22, cy - 14, cx + 22, cy - 14);
+  line(cx - 11, cy - 4,  cx + 11, cy - 4);
+  line(cx - 22, cy + 6,  cx + 22, cy + 6);
+  line(cx - 11, cy + 16, cx + 11, cy + 16);
+  ctx.restore();
+}
+
+function drawSwitchH(cx, cy, closed) {
+  ctx.save();
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 2.2;
+  line(cx - 28, cy, cx - 14, cy);
+  line(cx + 14, cy, cx + 28, cy);
+
+  if (closed) {
+    line(cx - 14, cy, cx + 14, cy);
+  } else {
+    ctx.beginPath();
+    ctx.moveTo(cx - 14, cy);
+    ctx.lineTo(cx + 10, cy - 14);
+    ctx.stroke();
+  }
+  ctx.restore();
+  drawDot(cx - 14, cy, 3.2, '#334155');
+  drawDot(cx + 14, cy, 3.2, '#334155');
+}
+
+/* ===================== 电流箭头动画 ===================== */
+function drawArrowsOnSegment(x1, y1, x2, y2, gap, phase, color) {
+  const dx = x2 - x1, dy = y2 - y1;
+  const len = Math.hypot(dx, dy);
+  if (len < 1) return;
+  const angle = Math.atan2(dy, dx);
+
+  /* 可用区间（跳过被元件占用的部分） */
+  const usable = [];
+  if (gap[0] > 0.02) usable.push([0, gap[0]]);
+  if (gap[1] < 0.98) usable.push([gap[1], 1]);
+  if (usable.length === 0) return;
+
+  let totalLen = 0;
+  for (const [a, b] of usable) totalLen += (b - a) * len;
+
+  const n = Math.max(2, Math.round(totalLen / 55));
+
+  for (let i = 0; i < n; i++) {
+    const fGlobal = ((i / n) + phase) % 1;
+    let target = fGlobal * totalLen;
+    for (const [a, b] of usable) {
+      const segLen = (b - a) * len;
+      if (target < segLen) {
+        const f = a + (target / segLen) * (b - a);
+        const x = x1 + f * dx;
+        const y = y1 + f * dy;
+        drawArrowAt(x, y, angle, 7.5, color);
+        break;
+      }
+      target -= segLen;
+    }
+  }
+}
+
+/* ===================== 绘制电路图 ===================== */
+function drawCircuit() {
+  const c = circuit;
+  const isClosed = state.t >= 0;
+
+  /* 导线 */
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 2.2;
+  ctx.lineCap = 'round';
+
+  // 上边
+  line(c.left, c.top, c.right, c.top);
+  // 右边
+  line(c.right, c.top, c.right, c.midY - 32);
+  line(c.right, c.midY + 32, c.right, c.bottom);
+  // 下边
+  line(c.left, c.bottom, c.right, c.bottom);
+  // 左边
+  line(c.left, c.top, c.left, c.midY - 32);
+  line(c.left, c.midY + 32, c.left, c.bottom);
+
+  /* 电流红色箭头（在导线上，被元件覆盖的部分会跳过） */
+  if (state.t >= 0) {
+    const currentRatio = Math.exp(-state.t / state.tau);
+    const alpha = 0.4 + currentRatio * 0.6;
+    const arrowColor = `rgba(232, 69, 60, ${alpha})`;
+
+    const phase = state.arrowPhase;
+
+    // 顶部导线: 左 → 右（跳过开关区域）
+    drawArrowsOnSegment(c.left, c.top, c.right, c.top,
+                        [0.22, 0.48], phase, arrowColor);
+
+    // 右侧导线: 上 → 下（跳过电阻）
+    drawArrowsOnSegment(c.right, c.top, c.right, c.bottom,
+                        [0.36, 0.64], phase, arrowColor);
+
+    // 底部导线: 右 → 左（跳过电容）
+    drawArrowsOnSegment(c.right, c.bottom, c.left, c.bottom,
+                        [0.39, 0.74], phase, arrowColor);
+
+    // 左侧导线: 下 → 上（跳过电池）
+    drawArrowsOnSegment(c.left, c.bottom, c.left, c.top,
+                        [0.36, 0.64], phase, arrowColor);
+  }
+
+  /* 元件 */
+  drawSwitchH(c.left + 80, c.top, isClosed);           // 开关
+  drawResistorV(c.right, c.midY, 14, 64);              // 电阻 R
+  drawBatteryV(c.left, c.midY);                        // 电池 U
+  drawCapacitorH(c.left + 120, c.bottom);              // 电容 C
+
+  /* 节点圆点 */
+  drawDot(c.left, c.top, 4.5, '#334155');
+  drawDot(c.right, c.top, 4.5, '#334155');
+  drawDot(c.left, c.bottom, 4.5, '#334155');
+  drawDot(c.right, c.bottom, 4.5, '#334155');
+
+  /* 标签 */
+  ctx.font = '13px system-ui';
+  ctx.fillStyle = '#475569';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  ctx.fillText('S', c.left + 80, c.top - 22);
+  ctx.fillText('R = ' + state.R.toFixed(1) + ' kΩ', c.right + 52, c.midY);
+  ctx.fillText('U = ' + state.U + ' V', c.left - 52, c.midY);
+  ctx.fillText('C = ' + state.C.toFixed(0) + ' µF', c.left + 120, c.bottom + 26);
+
+  /* t<0 时显示开关断开说明 */
+  if (!isClosed) {
+    ctx.font = '12px system-ui';
+    ctx.fillStyle = '#94a3b8';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText('t < 0：开关断开，i = 0', (c.left + c.right) / 2, c.bottom + 50);
+  }
+}
+
+/* ===================== 绘制曲线图 ===================== */
+function drawChart() {
+  const tau = state.tau, U = state.U, I0 = state.I0;
+  const x0 = CHART_X, x1 = CHART_X + CHART_W;
+  const y0 = CHART_Y, y1 = CHART_Y + CHART_H;
+
+  /* 背景 */
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(x0, y0, CHART_W, CHART_H);
+
+  /* 水平网格 */
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = '#eef2f8';
+  for (let k = 1; k <= 4; k++) {
+    const y = y1 - (k / 4) * CHART_H;
+    line(x0, y, x1, y);
+  }
+
+  /* 垂直网格（自适应间隔） */
+  const step = niceTimeStep(state.T_MAX - state.T_MIN);
+  const tStart = Math.ceil(state.T_MIN / step) * step;
+  for (let t = tStart; t <= state.T_MAX + step * 0.01; t += step) {
+    const x = X(t);
+    if (x < x0 - 1 || x > x1 + 1) continue;
+    line(x, y0, x, y1);
+  }
+
+  /* 坐标轴 */
+  ctx.strokeStyle = '#c8d3e3';
+  ctx.lineWidth = 1.4;
+  line(x0, y0, x0, y1);
+  line(x0, y1, x1, y1);
+
+  /* t = 0 强调线 */
+  const xZero = X(0);
+  ctx.save();
+  ctx.setLineDash([4, 4]);
+  ctx.strokeStyle = '#cbd5e1';
+  ctx.lineWidth = 1.2;
+  line(xZero, y0, xZero, y1);
+  ctx.restore();
+
+  /* 左侧电压刻度 */
+  ctx.fillStyle = '#64748b';
+  ctx.font = '11px system-ui';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  for (let k = 0; k <= 4; k++) {
+    const y = y1 - (k / 4) * CHART_H;
+    ctx.fillText((U * k / 4).toFixed(U < 5 ? 1 : 0) + 'V', x0 - 8, y);
+  }
+  /* 右侧电流刻度 */
+  ctx.textAlign = 'left';
+  for (let k = 0; k <= 4; k++) {
+    const y = y1 - (k / 4) * CHART_H;
+    ctx.fillText(fmtCurrent(I0 * k / 4), x1 + 8, y);
+  }
+
+  /* 横轴时间刻度 */
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillStyle = '#94a3b8';
+  for (let t = tStart; t <= state.T_MAX + step * 0.01; t += step) {
+    const x = X(t);
+    if (x < x0 - 1 || x > x1 + 1) continue;
+    ctx.fillText(fmtTime(t), x, y1 + 8);
+  }
+
+  /* 轴标题 */
+  ctx.fillStyle = '#94a3b8';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText('t', (x0 + x1) / 2, y1 + 30);
+
+  /* 图例 */
+  ctx.font = '12px system-ui';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+
+  ctx.fillStyle = '#1a73e8';
+  ctx.fillRect(x0 + 10, y0 - 24, 16, 3);
+  ctx.fillStyle = '#475569';
+  ctx.fillText('u_C(t)', x0 + 32, y0 - 22);
+
+  ctx.fillStyle = '#e8453c';
+  ctx.fillRect(x0 + 100, y0 - 24, 16, 3);
+  ctx.fillStyle = '#475569';
+  ctx.fillText('i(t)', x0 + 122, y0 - 22);
+
+  /* 电压曲线 u_C(t) = U(1 - e^(-t/τ)) */
+  ctx.beginPath();
+  for (let px = 0; px <= CHART_W; px++) {
+    const t = state.T_MIN + (px / CHART_W) * (state.T_MAX - state.T_MIN);
+    const u = t < 0 ? 0 : U * (1 - Math.exp(-t / tau));
+    const x = x0 + px, y = YV(u);
+    px === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = '#1a73e8';
+  ctx.lineWidth = 2.6;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  /* 电流曲线 i(t) = (U/R)·e^(-t/τ) */
+  ctx.beginPath();
+  for (let px = 0; px <= CHART_W; px++) {
+    const t = state.T_MIN + (px / CHART_W) * (state.T_MAX - state.T_MIN);
+    const i = t < 0 ? 0 : I0 * Math.exp(-t / tau);
+    const x = x0 + px, y = YI(i);
+    px === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = '#e8453c';
+  ctx.lineWidth = 2.6;
+  ctx.stroke();
+
+  /* τ 参考虚线 */
+  const xt = X(tau);
+  if (xt >= x0 && xt <= x1) {
+    ctx.save();
+    ctx.setLineDash([6, 5]);
+    ctx.strokeStyle = '#a78bfa';
+    ctx.lineWidth = 1.4;
+    line(xt, y0, xt, y1);
+    ctx.restore();
+
+    // 特征点
+    drawDot(xt, YV(0.632 * U), 5, '#1a73e8');
+    drawDot(xt, YI(0.368 * I0), 5, '#e8453c');
+
+    ctx.fillStyle = '#8b5cf6';
+    ctx.font = '12px system-ui';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('τ = ' + fmtTime(tau), xt + 6, y0 + 14);
+  }
+
+  /* 动画游标 */
+  const tNow = state.t;
+  if (tNow >= state.T_MIN) {
+    const xn = X(tNow);
+    // 垂直虚线
+    ctx.save();
+    ctx.setLineDash([3, 4]);
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1;
+    line(xn, y0, xn, y1);
+    ctx.restore();
+
+    // 电压游标
+    const uNow = tNow < 0 ? 0 : U * (1 - Math.exp(-tNow / tau));
+    drawDot(xn, YV(uNow), 6, '#1a73e8');
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(xn, YV(uNow), 2.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 电流游标
+    const iNow = tNow < 0 ? 0 : I0 * Math.exp(-tNow / tau);
+    drawDot(xn, YI(iNow), 6, '#e8453c');
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(xn, YI(iNow), 2.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+/* ===================== 主绘制 ===================== */
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, W, H);
+
+  drawCircuit();
+  drawChart();
+}
+
+/* ===================== 数据同步 ===================== */
+function sync() {
+  state.R = +$('rIn').value;
+  state.C = +$('cIn').value;
+  state.U = +$('uIn').value;
+
+  compute();
+
+  $('rVal').textContent = state.R.toFixed(1) + ' kΩ';
+  $('cVal').textContent = state.C.toFixed(1) + ' µF';
+  $('uVal').textContent = state.U + ' V';
+
+  $('tauOut').textContent = fmtTime(state.tau);
+  $('uTau').textContent   = (0.632 * state.U).toFixed(2) + ' V';
+  $('u5').textContent     = (0.993 * state.U).toFixed(2) + ' V';
+  $('i0Out').textContent  = fmtCurrent(state.I0);
+  $('iTau').textContent   = fmtCurrent(0.368 * state.I0);
+
+  draw();
+}
+
+/* ===================== 动画循环 ===================== */
+let lastTime = 0;
+function animate(time) {
+  const dt = lastTime ? (time - lastTime) / 1000 : 0;
+  lastTime = time;
+  const safeDt = Math.min(dt, 0.06);
+
+  if (state.playing) {
+    state.progress += safeDt * 0.2;   // 每 5 秒走完整个时间轴
+    if (state.progress >= 1) state.progress = 0;
+    state.t = state.T_MIN + state.progress * (state.T_MAX - state.T_MIN);
+    draw();
+  }
+
+  /* 箭头相位：电流越大转得越快 */
+  const currentRatio = state.t < 0 ? 0 : Math.exp(-state.t / state.tau);
+  state.arrowPhase += safeDt * (0.35 + currentRatio * 1.5);
+  state.arrowPhase %= 1;
+  draw();
+
+  requestAnimationFrame(animate);
+}
+
+/* ===================== 事件绑定 ===================== */
+['rIn', 'cIn', 'uIn'].forEach(id => {
+  $(id).addEventListener('input', sync);
+});
+
+$('playBtn').addEventListener('click', () => {
+  state.playing = !state.playing;
+  $('playBtn').textContent = state.playing ? '⏸ 暂停' : '▶ 播放';
+  if (state.playing) state.progress = 0;   // 从 t < 0 开始播放
+  draw();
+});
+
+$('resetBtn').addEventListener('click', () => {
+  state.playing = false;
+  $('playBtn').textContent = '▶ 播放';
+  state.progress = 0;
+  state.t = state.T_MIN;
+  state.arrowPhase = 0;
+  draw();
+});
+
+window.addEventListener('resize', () => { setupCanvas(); draw(); });
+
+/* ===================== 启动 ===================== */
+setupCanvas();
+sync();
+state.progress = 0;
+state.t = state.T_MIN;
+draw();
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>
