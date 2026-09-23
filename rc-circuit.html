@@ -26,122 +26,50 @@
   }
   @media (max-width: 1040px) { .app { grid-template-columns: 1fr; } }
 
-  /* ============ 左侧控制面板 ============ */
-  .panel h1 {
-    font-size: 24px; margin: 0 0 6px; font-weight: 700;
-    letter-spacing: -0.4px; color: #0f172a;
-  }
-  .panel .subtitle {
-    color: #64748b; font-size: 14.5px; margin-bottom: 26px;
-    line-height: 1.65;
-  }
+  .panel h1 { font-size: 24px; margin: 0 0 6px; font-weight: 700; letter-spacing: -0.4px; color: #0f172a; }
+  .panel .subtitle { color: #64748b; font-size: 14.5px; margin-bottom: 26px; line-height: 1.65; }
 
   .section-title {
-    font-size: 12.5px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 1px;
-    color: #94a3b8;
-    margin-bottom: 16px; padding-bottom: 9px;
-    border-bottom: 2px solid #eef2f8;
+    font-size: 12.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: #94a3b8;
+    margin-bottom: 16px; padding-bottom: 9px; border-bottom: 2px solid #eef2f8;
   }
-
   .ctrl { margin-bottom: 22px; }
-  .ctrl-row {
-    display: flex; justify-content: space-between; align-items: baseline;
-    font-size: 15px; margin-bottom: 8px;
-  }
+  .ctrl-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 15px; margin-bottom: 8px; }
   .ctrl-row .label { color: #475569; font-weight: 500; }
-  .ctrl-row .value {
-    font-weight: 700; color: #2563eb;
-    font-variant-numeric: tabular-nums;
-    font-family: "SF Mono", Consolas, monospace;
-    font-size: 15.5px;
-  }
-  input[type=range] {
-    width: 100%; height: 24px;
-    accent-color: #2563eb;
-    cursor: pointer;
-  }
+  .ctrl-row .value { font-weight: 700; color: #2563eb; font-variant-numeric: tabular-nums; font-family: "SF Mono", Consolas, monospace; font-size: 15.5px; }
+  input[type=range] { width: 100%; height: 24px; accent-color: #2563eb; cursor: pointer; }
 
-  .btn-row {
-    display: flex; gap: 12px; margin-top: 10px;
-  }
+  .btn-row { display: flex; gap: 12px; margin-top: 10px; }
   .btn {
-    flex: 1; padding: 13px 16px;
-    border-radius: 11px; cursor: pointer;
-    font-size: 15px; font-weight: 600;
-    font-family: inherit;
+    flex: 1; padding: 13px 16px; border-radius: 11px; cursor: pointer;
+    font-size: 15px; font-weight: 600; font-family: inherit;
     background: #2563eb; border: none; color: #fff;
     transition: all 0.18s ease;
     box-shadow: 0 2px 8px rgba(37,99,235,0.28);
   }
-  .btn:hover {
-    background: #1d4ed8;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(37,99,235,0.35);
-  }
+  .btn:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(37,99,235,0.35); }
   .btn:active { transform: translateY(0); }
-  .btn.ghost {
-    background: #fff; color: #475569;
-    border: 1.5px solid #e2e8f0;
-    box-shadow: none;
-  }
-  .btn.ghost:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(15,23,42,0.06);
-  }
+  .btn.ghost { background: #fff; color: #475569; border: 1.5px solid #e2e8f0; box-shadow: none; }
+  .btn.ghost:hover { background: #f8fafc; border-color: #cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(15,23,42,0.06); }
 
-  /* ============ 右侧绘图区 ============ */
   .canvas-wrap {
     background: linear-gradient(180deg, #fbfdff 0%, #f8fafc 100%);
-    border: 1px solid #e8eef7;
-    border-radius: 16px;
-    padding: 12px;
-    margin-bottom: 20px;
+    border: 1px solid #e8eef7; border-radius: 16px; padding: 12px; margin-bottom: 20px;
     box-shadow: inset 0 1px 3px rgba(15,23,42,0.02);
   }
   canvas { width: 100%; height: auto; display: block; border-radius: 10px; }
 
-  /* ============ 结果卡片 ============ */
-  .readout {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 14px;
-  }
+  .readout { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
   .card {
-    background: #fff;
-    border: 1.5px solid #e8eef7;
-    border-radius: 14px;
-    padding: 16px 18px;
-    transition: all 0.18s ease;
-    box-shadow: 0 1px 3px rgba(15,23,42,0.03);
+    background: #fff; border: 1.5px solid #e8eef7; border-radius: 14px; padding: 16px 18px;
+    transition: all 0.18s ease; box-shadow: 0 1px 3px rgba(15,23,42,0.03);
   }
-  .card:hover {
-    border-color: #cbd5e1;
-    box-shadow: 0 4px 12px rgba(15,23,42,0.06);
-    transform: translateY(-2px);
-  }
-  .card.blue {
-    background: linear-gradient(180deg, #f8fbff 0%, #f0f6ff 100%);
-    border-color: #dbeafe;
-  }
-  .card.red {
-    background: linear-gradient(180deg, #fff8f8 0%, #fff1f0 100%);
-    border-color: #fee2e2;
-  }
-  .card .k {
-    font-size: 13px; color: #64748b;
-    margin-bottom: 7px; font-weight: 500;
-    letter-spacing: 0.1px;
-  }
-  .card .v {
-    font-size: 21px; font-weight: 700;
-    color: #2563eb;
-    font-variant-numeric: tabular-nums;
-    font-family: "SF Mono", Consolas, monospace;
-    letter-spacing: -0.5px;
-  }
+  .card:hover { border-color: #cbd5e1; box-shadow: 0 4px 12px rgba(15,23,42,0.06); transform: translateY(-2px); }
+  .card.blue { background: linear-gradient(180deg, #f8fbff 0%, #f0f6ff 100%); border-color: #dbeafe; }
+  .card.red { background: linear-gradient(180deg, #fff8f8 0%, #fff1f0 100%); border-color: #fee2e2; }
+  .card .k { font-size: 13px; color: #64748b; margin-bottom: 7px; font-weight: 500; letter-spacing: 0.1px; }
+  .card .v { font-size: 21px; font-weight: 700; color: #2563eb; font-variant-numeric: tabular-nums; font-family: "SF Mono", Consolas, monospace; letter-spacing: -0.5px; }
   .card.red .v { color: #dc2626; }
 </style>
  <script>
@@ -156,7 +84,6 @@ var _hmt = _hmt || [];
 </head>
 <body>
 <div class="app">
-  <!-- 左侧控制面板 -->
   <div class="panel">
     <h1>RC 充电电路</h1>
     <div class="subtitle">拖动滑块调整参数，观察电容电压与充电电流的动态变化</div>
@@ -164,26 +91,15 @@ var _hmt = _hmt || [];
     <div class="section-title">参数调节</div>
 
     <div class="ctrl">
-      <div class="ctrl-row">
-        <span class="label">电阻 R</span>
-        <span class="value" id="rVal">5.0 kΩ</span>
-      </div>
+      <div class="ctrl-row"><span class="label">电阻 R</span><span class="value" id="rVal">5.0 kΩ</span></div>
       <input type="range" id="rIn" min="1" max="50" step="0.5" value="5">
     </div>
-
     <div class="ctrl">
-      <div class="ctrl-row">
-        <span class="label">电容 C</span>
-        <span class="value" id="cVal">10.0 µF</span>
-      </div>
+      <div class="ctrl-row"><span class="label">电容 C</span><span class="value" id="cVal">10.0 µF</span></div>
       <input type="range" id="cIn" min="1" max="100" step="1" value="10">
     </div>
-
     <div class="ctrl">
-      <div class="ctrl-row">
-        <span class="label">电源 U</span>
-        <span class="value" id="uVal">10 V</span>
-      </div>
+      <div class="ctrl-row"><span class="label">电源 U</span><span class="value" id="uVal">10 V</span></div>
       <input type="range" id="uIn" min="1" max="20" step="1" value="10">
     </div>
 
@@ -193,7 +109,6 @@ var _hmt = _hmt || [];
     </div>
   </div>
 
-  <!-- 右侧画布与结果 -->
   <div>
     <div class="canvas-wrap">
       <canvas id="cv"></canvas>
@@ -228,19 +143,19 @@ var _hmt = _hmt || [];
 /* ===================== 基础设置 ===================== */
 const cv  = document.getElementById('cv');
 const ctx = cv.getContext('2d');
-const W = 980, H = 480;
+const W = 1050, H = 560;    /* ★ 画布从 980×480 扩大到 1050×560 */
 const $ = id => document.getElementById(id);
 
 /* 电路图布局 */
 const circuit = {
-  left: 80, right: 340, top: 120, bottom: 360, midY: 240
+  left: 100, right: 340, top: 130, bottom: 370, midY: 250
 };
 
 /* 曲线图布局 */
-const CHART_X = 425;
-const CHART_W = 530;
-const CHART_Y = 65;
-const CHART_H = 375;
+const CHART_X = 470;
+const CHART_W = 500;
+const CHART_Y = 75;
+const CHART_H = 400;
 
 /* ===================== 状态 ===================== */
 const state = {
@@ -305,76 +220,39 @@ function niceTimeStep(span) {
 function line(x1, y1, x2, y2) {
   ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
 }
-
 function drawDot(x, y, r, color) {
-  ctx.beginPath();
-  ctx.arc(x, y, r, 0, Math.PI * 2);
-  ctx.fillStyle = color;
-  ctx.fill();
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
 }
-
 function drawArrowAt(x, y, angle, size, color) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(angle);
-  ctx.beginPath();
-  ctx.moveTo(size * 0.85, 0);
-  ctx.lineTo(-size * 0.55, -size * 0.6);
-  ctx.lineTo(-size * 0.55,  size * 0.6);
-  ctx.closePath();
-  ctx.fillStyle = color;
-  ctx.fill();
-  ctx.restore();
+  ctx.save(); ctx.translate(x, y); ctx.rotate(angle);
+  ctx.beginPath(); ctx.moveTo(size * 0.85, 0); ctx.lineTo(-size * 0.55, -size * 0.6);
+  ctx.lineTo(-size * 0.55, size * 0.6); ctx.closePath(); ctx.fillStyle = color; ctx.fill(); ctx.restore();
 }
-
 function drawResistorV(cx, cy, w, h) {
-  ctx.save();
-  ctx.fillStyle = '#ffffff';
-  ctx.strokeStyle = '#334155';
-  ctx.lineWidth = 2.2;
-  ctx.beginPath();
-  ctx.rect(cx - w/2, cy - h/2, w, h);
-  ctx.fill(); ctx.stroke();
-  ctx.restore();
+  ctx.save(); ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#334155'; ctx.lineWidth = 2.2;
+  ctx.beginPath(); ctx.rect(cx - w/2, cy - h/2, w, h); ctx.fill(); ctx.stroke(); ctx.restore();
 }
-
 function drawCapacitorH(cx, cy) {
-  ctx.save();
-  ctx.strokeStyle = '#334155';
-  ctx.lineWidth = 2.5;
+  ctx.save(); ctx.strokeStyle = '#334155'; ctx.lineWidth = 2.5;
   line(cx - 14, cy - 20, cx - 14, cy + 20);
   line(cx + 14, cy - 20, cx + 14, cy + 20);
   ctx.restore();
 }
-
 function drawBatteryV(cx, cy) {
-  ctx.save();
-  ctx.strokeStyle = '#334155';
-  ctx.lineWidth = 2.2;
+  ctx.save(); ctx.strokeStyle = '#334155'; ctx.lineWidth = 2.2;
   line(cx - 24, cy - 16, cx + 24, cy - 16);
   line(cx - 12, cy - 5,  cx + 12, cy - 5);
   line(cx - 24, cy + 6,  cx + 24, cy + 6);
   line(cx - 12, cy + 17, cx + 12, cy + 17);
   ctx.restore();
 }
-
 function drawSwitchH(cx, cy, closed) {
-  ctx.save();
-  ctx.strokeStyle = '#334155';
-  ctx.lineWidth = 2.4;
-  line(cx - 30, cy, cx - 16, cy);
-  line(cx + 16, cy, cx + 30, cy);
-  if (closed) {
-    line(cx - 16, cy, cx + 16, cy);
-  } else {
-    ctx.beginPath();
-    ctx.moveTo(cx - 16, cy);
-    ctx.lineTo(cx + 12, cy - 16);
-    ctx.stroke();
-  }
+  ctx.save(); ctx.strokeStyle = '#334155'; ctx.lineWidth = 2.4;
+  line(cx - 30, cy, cx - 16, cy); line(cx + 16, cy, cx + 30, cy);
+  if (closed) { line(cx - 16, cy, cx + 16, cy); }
+  else { ctx.beginPath(); ctx.moveTo(cx - 16, cy); ctx.lineTo(cx + 12, cy - 16); ctx.stroke(); }
   ctx.restore();
-  drawDot(cx - 16, cy, 3.5, '#334155');
-  drawDot(cx + 16, cy, 3.5, '#334155');
+  drawDot(cx - 16, cy, 3.5, '#334155'); drawDot(cx + 16, cy, 3.5, '#334155');
 }
 
 /* ===================== 电流箭头动画 ===================== */
@@ -383,17 +261,13 @@ function drawArrowsOnSegment(x1, y1, x2, y2, gap, phase, color) {
   const len = Math.hypot(dx, dy);
   if (len < 1) return;
   const angle = Math.atan2(dy, dx);
-
   const usable = [];
   if (gap[0] > 0.02) usable.push([0, gap[0]]);
   if (gap[1] < 0.98) usable.push([gap[1], 1]);
   if (usable.length === 0) return;
-
   let totalLen = 0;
   for (const [a, b] of usable) totalLen += (b - a) * len;
-
   const n = Math.max(2, Math.round(totalLen / 55));
-
   for (let i = 0; i < n; i++) {
     const fGlobal = ((i / n) + phase) % 1;
     let target = fGlobal * totalLen;
@@ -401,9 +275,7 @@ function drawArrowsOnSegment(x1, y1, x2, y2, gap, phase, color) {
       const segLen = (b - a) * len;
       if (target < segLen) {
         const f = a + (target / segLen) * (b - a);
-        const x = x1 + f * dx;
-        const y = y1 + f * dy;
-        drawArrowAt(x, y, angle, 9, color);
+        drawArrowAt(x1 + f * dx, y1 + f * dy, angle, 9, color);
         break;
       }
       target -= segLen;
@@ -416,10 +288,7 @@ function drawCircuit() {
   const c = circuit;
   const isClosed = state.t >= 0;
 
-  /* 导线 */
-  ctx.strokeStyle = '#334155';
-  ctx.lineWidth = 2.5;
-  ctx.lineCap = 'round';
+  ctx.strokeStyle = '#334155'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
 
   line(c.left, c.top, c.right, c.top);
   line(c.right, c.top, c.right, c.midY - 36);
@@ -428,56 +297,45 @@ function drawCircuit() {
   line(c.left, c.top, c.left, c.midY - 36);
   line(c.left, c.midY + 36, c.left, c.bottom);
 
-  /* 电流红色箭头 */
   if (state.t >= 0) {
     const currentRatio = Math.exp(-state.t / state.tau);
     const alpha = 0.45 + currentRatio * 0.55;
     const arrowColor = `rgba(232, 69, 60, ${alpha})`;
     const phase = state.arrowPhase;
 
-    drawArrowsOnSegment(c.left, c.top, c.right, c.top,
-                        [0.22, 0.48], phase, arrowColor);
-    drawArrowsOnSegment(c.right, c.top, c.right, c.bottom,
-                        [0.34, 0.66], phase, arrowColor);
-    drawArrowsOnSegment(c.right, c.bottom, c.left, c.bottom,
-                        [0.36, 0.74], phase, arrowColor);
-    drawArrowsOnSegment(c.left, c.bottom, c.left, c.top,
-                        [0.34, 0.66], phase, arrowColor);
+    drawArrowsOnSegment(c.left, c.top, c.right, c.top, [0.22, 0.48], phase, arrowColor);
+    drawArrowsOnSegment(c.right, c.top, c.right, c.bottom, [0.34, 0.66], phase, arrowColor);
+    drawArrowsOnSegment(c.right, c.bottom, c.left, c.bottom, [0.36, 0.74], phase, arrowColor);
+    drawArrowsOnSegment(c.left, c.bottom, c.left, c.top, [0.34, 0.66], phase, arrowColor);
   }
 
-  /* 元件 */
   drawSwitchH(c.left + 90, c.top, isClosed);
   drawResistorV(c.right, c.midY, 16, 72);
   drawBatteryV(c.left, c.midY);
   drawCapacitorH(c.left + 130, c.bottom);
 
-  /* 节点圆点 */
   drawDot(c.left, c.top, 5, '#334155');
   drawDot(c.right, c.top, 5, '#334155');
   drawDot(c.left, c.bottom, 5, '#334155');
   drawDot(c.right, c.bottom, 5, '#334155');
 
-  /* 标签（字体放大） */
+  /* 标签（左侧 U 标签稍微内移，避免被裁切） */
   ctx.font = '600 15px system-ui';
   ctx.fillStyle = '#334155';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-
   ctx.fillText('S', c.left + 90, c.top - 26);
-
   ctx.fillStyle = '#1e293b';
-  ctx.font = '600 15px system-ui';
-  ctx.fillText('R = ' + state.R.toFixed(1) + ' kΩ', c.right + 60, c.midY);
-  ctx.fillText('U = ' + state.U + ' V', c.left - 58, c.midY);
-  ctx.fillText('C = ' + state.C.toFixed(0) + ' µF', c.left + 130, c.bottom + 30);
+  ctx.fillText('R = ' + state.R.toFixed(1) + ' kΩ', c.right + 62, c.midY);
+  ctx.fillText('U = ' + state.U + ' V', c.left - 54, c.midY);
+  ctx.fillText('C = ' + state.C.toFixed(0) + ' µF', c.left + 130, c.bottom + 32);
 
-  /* t<0 说明 */
   if (!isClosed) {
     ctx.font = '14px system-ui';
     ctx.fillStyle = '#94a3b8';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
-    ctx.fillText('t < 0：开关断开，i = 0', (c.left + c.right) / 2, c.bottom + 60);
+    ctx.fillText('t < 0：开关断开，i = 0', (c.left + c.right) / 2, c.bottom + 62);
   }
 }
 
@@ -487,19 +345,15 @@ function drawChart() {
   const x0 = CHART_X, x1 = CHART_X + CHART_W;
   const y0 = CHART_Y, y1 = CHART_Y + CHART_H;
 
-  /* 背景 */
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(x0, y0, CHART_W, CHART_H);
 
-  /* 水平网格 */
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = '#eef2f8';
+  ctx.lineWidth = 1; ctx.strokeStyle = '#eef2f8';
   for (let k = 1; k <= 4; k++) {
     const y = y1 - (k / 4) * CHART_H;
     line(x0, y, x1, y);
   }
 
-  /* 垂直网格 */
   const step = niceTimeStep(state.T_MAX - state.T_MIN);
   const tStart = Math.ceil(state.T_MIN / step) * step;
   for (let t = tStart; t <= state.T_MAX + step * 0.01; t += step) {
@@ -508,69 +362,43 @@ function drawChart() {
     line(x, y0, x, y1);
   }
 
-  /* 坐标轴 */
-  ctx.strokeStyle = '#c8d3e3';
-  ctx.lineWidth = 1.6;
-  line(x0, y0, x0, y1);
-  line(x0, y1, x1, y1);
+  ctx.strokeStyle = '#c8d3e3'; ctx.lineWidth = 1.6;
+  line(x0, y0, x0, y1); line(x0, y1, x1, y1);
 
-  /* t = 0 强调线 */
   const xZero = X(0);
-  ctx.save();
-  ctx.setLineDash([5, 5]);
-  ctx.strokeStyle = '#cbd5e1';
-  ctx.lineWidth = 1.3;
-  line(xZero, y0, xZero, y1);
-  ctx.restore();
+  ctx.save(); ctx.setLineDash([5, 5]); ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1.3;
+  line(xZero, y0, xZero, y1); ctx.restore();
 
-  /* 左侧电压刻度 */
-  ctx.fillStyle = '#64748b';
-  ctx.font = '600 13px system-ui';
-  ctx.textAlign = 'right';
-  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#64748b'; ctx.font = '600 13px system-ui';
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
   for (let k = 0; k <= 4; k++) {
     const y = y1 - (k / 4) * CHART_H;
     ctx.fillText((U * k / 4).toFixed(U < 5 ? 1 : 0) + 'V', x0 - 10, y);
   }
-  /* 右侧电流刻度 */
   ctx.textAlign = 'left';
   for (let k = 0; k <= 4; k++) {
     const y = y1 - (k / 4) * CHART_H;
     ctx.fillText(fmtCurrent(I0 * k / 4), x1 + 10, y);
   }
 
-  /* 横轴时间刻度 */
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'top';
-  ctx.fillStyle = '#64748b';
-  ctx.font = '600 13px system-ui';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillStyle = '#64748b';
   for (let t = tStart; t <= state.T_MAX + step * 0.01; t += step) {
     const x = X(t);
     if (x < x0 - 1 || x > x1 + 1) continue;
-    ctx.fillText(fmtTime(t), x, y1 + 10);
+    ctx.fillText(fmtTime(t), x, y1 + 12);
   }
 
-  /* 轴标题 */
-  ctx.fillStyle = '#94a3b8';
-  ctx.font = '600 14px system-ui';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'top';
-  ctx.fillText('t', (x0 + x1) / 2, y1 + 36);
+  ctx.fillStyle = '#94a3b8'; ctx.font = '600 14px system-ui';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  ctx.fillText('t', (x0 + x1) / 2, y1 + 42);
 
   /* 图例 */
   ctx.font = '600 14px system-ui';
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-
-  ctx.fillStyle = '#1a73e8';
-  ctx.fillRect(x0 + 12, y0 - 28, 20, 4);
-  ctx.fillStyle = '#334155';
-  ctx.fillText('u_C(t)', x0 + 38, y0 - 26);
-
-  ctx.fillStyle = '#e8453c';
-  ctx.fillRect(x0 + 120, y0 - 28, 20, 4);
-  ctx.fillStyle = '#334155';
-  ctx.fillText('i(t)', x0 + 146, y0 - 26);
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#1a73e8'; ctx.fillRect(x0 + 12, y0 - 28, 20, 4);
+  ctx.fillStyle = '#334155'; ctx.fillText('u_C(t)', x0 + 38, y0 - 26);
+  ctx.fillStyle = '#e8453c'; ctx.fillRect(x0 + 120, y0 - 28, 20, 4);
+  ctx.fillStyle = '#334155'; ctx.fillText('i(t)', x0 + 146, y0 - 26);
 
   /* 电压曲线 */
   ctx.beginPath();
@@ -580,10 +408,7 @@ function drawChart() {
     const x = x0 + px, y = YV(u);
     px === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   }
-  ctx.strokeStyle = '#1a73e8';
-  ctx.lineWidth = 3;
-  ctx.lineJoin = 'round';
-  ctx.stroke();
+  ctx.strokeStyle = '#1a73e8'; ctx.lineWidth = 3; ctx.lineJoin = 'round'; ctx.stroke();
 
   /* 电流曲线 */
   ctx.beginPath();
@@ -593,27 +418,17 @@ function drawChart() {
     const x = x0 + px, y = YI(i);
     px === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   }
-  ctx.strokeStyle = '#e8453c';
-  ctx.lineWidth = 3;
-  ctx.stroke();
+  ctx.strokeStyle = '#e8453c'; ctx.lineWidth = 3; ctx.stroke();
 
   /* τ 参考虚线 */
   const xt = X(tau);
   if (xt >= x0 && xt <= x1) {
-    ctx.save();
-    ctx.setLineDash([7, 6]);
-    ctx.strokeStyle = '#a78bfa';
-    ctx.lineWidth = 1.6;
-    line(xt, y0, xt, y1);
-    ctx.restore();
-
+    ctx.save(); ctx.setLineDash([7, 6]); ctx.strokeStyle = '#a78bfa'; ctx.lineWidth = 1.6;
+    line(xt, y0, xt, y1); ctx.restore();
     drawDot(xt, YV(0.632 * U), 6, '#1a73e8');
     drawDot(xt, YI(0.368 * I0), 6, '#e8453c');
-
-    ctx.fillStyle = '#8b5cf6';
-    ctx.font = '700 14px system-ui';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'bottom';
+    ctx.fillStyle = '#8b5cf6'; ctx.font = '700 14px system-ui';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
     ctx.fillText('τ = ' + fmtTime(tau), xt + 8, y0 + 18);
   }
 
@@ -621,26 +436,16 @@ function drawChart() {
   const tNow = state.t;
   if (tNow >= state.T_MIN) {
     const xn = X(tNow);
-    ctx.save();
-    ctx.setLineDash([4, 5]);
-    ctx.strokeStyle = '#cbd5e1';
-    ctx.lineWidth = 1.2;
-    line(xn, y0, xn, y1);
-    ctx.restore();
+    ctx.save(); ctx.setLineDash([4, 5]); ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1.2;
+    line(xn, y0, xn, y1); ctx.restore();
 
     const uNow = tNow < 0 ? 0 : U * (1 - Math.exp(-tNow / tau));
     drawDot(xn, YV(uNow), 7, '#1a73e8');
-    ctx.fillStyle = '#fff';
-    ctx.beginPath();
-    ctx.arc(xn, YV(uNow), 3, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(xn, YV(uNow), 3, 0, Math.PI * 2); ctx.fill();
 
     const iNow = tNow < 0 ? 0 : I0 * Math.exp(-tNow / tau);
     drawDot(xn, YI(iNow), 7, '#e8453c');
-    ctx.fillStyle = '#fff';
-    ctx.beginPath();
-    ctx.arc(xn, YI(iNow), 3, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(xn, YI(iNow), 3, 0, Math.PI * 2); ctx.fill();
   }
 }
 
@@ -649,7 +454,6 @@ function draw() {
   ctx.clearRect(0, 0, W, H);
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, W, H);
-
   drawCircuit();
   drawChart();
 }
@@ -659,7 +463,6 @@ function sync() {
   state.R = +$('rIn').value;
   state.C = +$('cIn').value;
   state.U = +$('uIn').value;
-
   compute();
 
   $('rVal').textContent = state.R.toFixed(1) + ' kΩ';
@@ -698,9 +501,7 @@ function animate(time) {
 }
 
 /* ===================== 事件绑定 ===================== */
-['rIn', 'cIn', 'uIn'].forEach(id => {
-  $(id).addEventListener('input', sync);
-});
+['rIn', 'cIn', 'uIn'].forEach(id => $(id).addEventListener('input', sync));
 
 $('playBtn').addEventListener('click', () => {
   state.playing = !state.playing;
