@@ -46,6 +46,42 @@
     margin-top: 36px; text-align: center;
     font-size: 12.5px; color: #94a3b8;
   }
+  /* 新增：分阶区块的样式 */
+  .section {
+    margin-bottom: 32px;
+  }
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 12px;
+    padding-left: 8px;
+    border-left: 4px solid #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .section-title .badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #e2e8f0;
+    color: #64748b;
+    font-weight: normal;
+  }
+  /* 硬件在环模块的专属强调样式 */
+  .section-hil .section-title { border-left-color: #e06c75; }
+  .section-hil .section-title .badge { background: #fdf2f2; color: #e06c75; }
+  
+  /* 给硬件在环卡片加一点红色的警示光晕效果 */
+  .card-hil {
+    border: 2px solid #f8b4b4;
+    background: #fffafb;
+  }
+  .card-hil:hover {
+    border-color: #e06c75;
+    box-shadow: 0 8px 24px rgba(224, 108, 117, 0.15);
+  }
 </style>
 <script>
 var _hmt = _hmt || [];
@@ -59,27 +95,70 @@ var _hmt = _hmt || [];
 </head>
 <body>
 <div class="container">
-  <h1>电路原理 · 交互演示合集</h1>
-  <div class="sub">点击下方任意卡片，进入对应的交互式实验演示</div>
+  <h1>电路原理 · 数字孪生探究中心</h1>
+  <div class="sub">点击下方卡片，进入对应的交互式实验演示</div>
 
-  <div class="grid">
-    <!-- 第一个卡片：三回路电流法 -->
-    <a class="card" href="three-loop.html">
-      <div class="info">
-        <div class="title">三回路电流法（上一下二）</div>
-        <div class="desc">三网孔电路，蓝色圆点实时展示各支路电流的流动方向与大小</div>
-      </div>
-      <div class="arrow">→</div>
-    </a>
+  <!-- 第一阶：算法与逻辑 -->
+  <div class="section">
+    <div class="section-title">
+      <span>第一阶：算法与逻辑（纯网页交互）</span>
+      <span class="badge">手机/电脑均可</span>
+    </div>
+    <div class="grid">
+      <!-- 保留原有的三回路卡片 -->
+      <a class="card" href="three-loop.html">
+        <div class="info">
+          <div class="title">三回路电流法（上一下二）</div>
+          <div class="desc">三网孔电路，蓝色圆点实时展示各支路电流的流动方向与大小</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
+    </div>
+  </div>
 
-    <!-- 第二个卡片：RC 充电电路 -->
-    <a class="card" href="rc-circuit.html">
-      <div class="info">
-        <div class="title">RC 充电电路</div>
-        <div class="desc">观察电容电压、充电电流随时间的指数变化，以及时间常数 τ 的影响</div>
-      </div>
-      <div class="arrow">→</div>
-    </a>
+  <!-- 第二阶：真实与动态（硬件在环） -->
+  <div class="section section-hil">
+    <div class="section-title">
+      <span>第二阶：真实与动态（硬件在环探究）</span>
+      <span class="badge">⚠️ 需电脑+Arduino硬件</span>
+    </div>
+    <div class="grid">
+      <!-- 保留原有的 RC 卡片 -->
+      <a class="card" href="rc-circuit.html">
+        <div class="info">
+          <div class="title">RC 充电电路</div>
+          <div class="desc">观察电容电压、充电电流随时间的指数变化，以及时间常数 τ 的影响</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
+
+      <!-- 新增：BMS 硬件在环卡片（预留位置） -->
+      <a class="card card-hil" href="bms-hil.html">
+        <div class="info">
+          <div class="title">BMS 电池内阻与最大功率（硬件在环）</div>
+          <div class="desc">连接真实电池与传感器，测出带毛刺的真实抛物线，探究旧电池为何加速无力</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 第三阶：系统与赋能 -->
+  <div class="section">
+    <div class="section-title">
+      <span>第三阶：系统与赋能（工程应用层）</span>
+      <span class="badge">手机/电脑均可</span>
+    </div>
+    <div class="grid">
+      <!-- 预留以后加入的网页 -->
+      <a class="card" href="#">
+        <div class="info">
+          <div class="title">功率因数与无功补偿</div>
+          <div class="desc">拖动电容滑块，观察工厂电费罚款如何变成奖励</div>
+        </div>
+        <div class="arrow">→</div>
+      </a>
+    </div>
   </div>
 
   <div class="footer">电路原理课程 · 交互式教学演示</div>
