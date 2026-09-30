@@ -1,167 +1,80 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>电路原理 · 交互演示合集</title>
-<style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; padding: 40px 24px;
-    background: #f1f5f9; color: #0f172a;
-    font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
-    min-height: 100vh;
-    display: flex; justify-content: center; align-items: flex-start;
-  }
-  .container { width: min(800px, 100%); }
-  h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin: 0 0 8px; }
-  .sub { color: #64748b; font-size: 15px; margin-bottom: 36px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电路原理 · 数字孪生探究中心</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 40px 20px; background: #f4f7f6; color: #2c3e50; font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif; display: flex; justify-content: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 800px; }
+        h1 { font-size: 32px; font-weight: 700; letter-spacing: 2px; text-align: center; margin-bottom: 10px; color: #1a252f;}
+        .sub { color: #7f8c8d; text-align: center; margin-bottom: 40px; font-size: 16px; }
+        
+        .tier-section { margin-bottom: 35px; }
+        .tier-title { font-size: 20px; font-weight: bold; margin-bottom: 15px; padding-left: 10px; border-left: 5px solid #3498db; color: #2c3e50; display: flex; justify-content: space-between; align-items: center;}
+        .tier-title span { font-size: 14px; font-weight: normal; color: #95a5a6; }
 
-  .grid { display: grid; gap: 16px; }
-  .card {
-    display: block; text-decoration: none;
-    background: #fff; border-radius: 14px;
-    padding: 22px 24px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 2px 8px rgba(15,23,42,0.04);
-    transition: all 0.2s ease;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(15,23,42,0.08);
-    border-color: #2563eb;
-  }
-  .card .info { flex: 1; }
-  .card .title { font-size: 17px; font-weight: 650; color: #0f172a; margin-bottom: 4px; }
-  .card .desc { font-size: 13.5px; color: #64748b; line-height: 1.5; }
-  .card .arrow {
-    font-size: 20px; color: #cbd5e1;
-    transition: all 0.2s;
-    margin-left: 18px;
-  }
-  .card:hover .arrow { color: #2563eb; transform: translateX(4px); }
-
-  .footer {
-    margin-top: 36px; text-align: center;
-    font-size: 12.5px; color: #94a3b8;
-  }
-  /* 新增：分阶区块的样式 */
-  .section {
-    margin-bottom: 32px;
-  }
-  .section-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: #0f172a;
-    margin-bottom: 12px;
-    padding-left: 8px;
-    border-left: 4px solid #2563eb;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .section-title .badge {
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    background: #e2e8f0;
-    color: #64748b;
-    font-weight: normal;
-  }
-  /* 硬件在环模块的专属强调样式 */
-  .section-hil .section-title { border-left-color: #e06c75; }
-  .section-hil .section-title .badge { background: #fdf2f2; color: #e06c75; }
-  
-  /* 给硬件在环卡片加一点红色的警示光晕效果 */
-  .card-hil {
-    border: 2px solid #f8b4b4;
-    background: #fffafb;
-  }
-  .card-hil:hover {
-    border-color: #e06c75;
-    box-shadow: 0 8px 24px rgba(224, 108, 117, 0.15);
-  }
-</style>
-<script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "https://hm.baidu.com/hm.js?c6903ff7acf7df9c6f74ea0b952e3209";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
-</script>
+        .grid { display: flex; flex-direction: column; gap: 15px; }
+        .card { display: block; text-decoration: none; background: #fff; border-radius: 12px; padding: 20px 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; transition: 0.2s; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+        .card .title { font-size: 20px; font-weight: bold; color: #2c3e50; margin-bottom: 8px; }
+        .card .desc { font-size: 15px; color: #7f8c8d; line-height: 1.5; }
+        
+        /* 特殊卡片样式（BMS硬件在环） */
+        .card-hw { border: 2px solid #e74c3c; background-color: #fff8f8; }
+        .card-hw .title { color: #e74c3c; }
+        .card-hw .desc { color: #e74c3c; font-weight: 500; }
+        
+        .footer { text-align: center; margin-top: 50px; color: #95a5a6; font-size: 14px; }
+    </style>
 </head>
 <body>
-<div class="container">
-  <h1>电路原理 · 数字孪生探究中心</h1>
-  <div class="sub">点击下方卡片，进入对应的交互式实验演示</div>
+    <div class="container">
+        <h1>⚡ 电路原理 · 数字孪生探究中心</h1>
+        <div class="sub">点击下方卡片，进入对应的交互式实验演示</div>
 
-  <!-- 第一阶：算法与逻辑 -->
-  <div class="section">
-    <div class="section-title">
-      <span>第一阶：算法与逻辑（纯网页交互）</span>
-      <span class="badge">手机/电脑均可</span>
-    </div>
-    <div class="grid">
-      <!-- 保留原有的三回路卡片 -->
-      <a class="card" href="three-loop.html">
-        <div class="info">
-          <div class="title">三回路电流法（上一下二）</div>
-          <div class="desc">三网孔电路，蓝色圆点实时展示各支路电流的流动方向与大小</div>
+        <!-- 第一阶 -->
+        <div class="tier-section">
+            <div class="tier-title">第一阶：算法与逻辑（纯网页交互） <span>手机/电脑均可</span></div>
+            <div class="grid">
+                <a class="card" href="three-loop.html">
+                    <div class="title">三回路电流法（上一下二）</div>
+                    <div class="desc">三网孔电路，蓝色圆点实时展示各支路电流的流动方向与大小</div>
+                </a>
+                <!-- 如果有其他第一阶的卡片，继续加在这里 -->
+            </div>
         </div>
-        <div class="arrow">→</div>
-      </a>
-    </div>
-  </div>
 
-  <!-- 第二阶：真实与动态（硬件在环） -->
-  <div class="section section-hil">
-    <div class="section-title">
-      <span>第二阶：真实与动态（硬件在环探究）</span>
-      <span class="badge">⚠️ 需电脑+Arduino硬件</span>
-    </div>
-    <div class="grid">
-      <!-- 保留原有的 RC 卡片 -->
-      <a class="card" href="rc-circuit.html">
-        <div class="info">
-          <div class="title">RC 充电电路</div>
-          <div class="desc">观察电容电压、充电电流随时间的指数变化，以及时间常数 τ 的影响</div>
+        <!-- 第二阶 -->
+        <div class="tier-section">
+            <div class="tier-title">第二阶：真实与动态（硬件在环探究） <span style="color: #e74c3c;">⚠️ 需电脑 + Arduino硬件</span></div>
+            <div class="grid">
+                <a class="card card-hw" href="bms-hil.html">
+                    <div class="title">🔋 BMS电池内阻与最大功率（硬件在环）</div>
+                    <div class="desc">连接真实电池与传感器，测出带毛刺的真实抛物线，探究旧电池为何加速无力</div>
+                </a>
+                <!-- 原有的RC充电电路卡片也放在这里 -->
+                <a class="card" href="rc-circuit.html">
+                    <div class="title">RC 充电电路</div>
+                    <div class="desc">观察电容电压、充电电流随时间的指数变化，以及时间常数τ的影响</div>
+                </a>
+            </div>
         </div>
-        <div class="arrow">→</div>
-      </a>
 
-      <!-- 新增：BMS 硬件在环卡片（预留位置） -->
-      <a class="card card-hil" href="bms-hil.html">
-        <div class="info">
-          <div class="title">BMS 电池内阻与最大功率（硬件在环）</div>
-          <div class="desc">连接真实电池与传感器，测出带毛刺的真实抛物线，探究旧电池为何加速无力</div>
+        <!-- 第三阶 -->
+        <div class="tier-section">
+            <div class="tier-title">第三阶：系统与赋能（工程应用层） <span>手机/电脑均可</span></div>
+            <div class="grid">
+                <a class="card" href="#">
+                    <div class="title">功率因数与无功补偿</div>
+                    <div class="desc">拖动电容滑块，观察工厂电费罚款如何变成奖励</div>
+                </a>
+                <!-- 如果有其他第三阶的卡片，继续加在这里 -->
+            </div>
         </div>
-        <div class="arrow">→</div>
-      </a>
-    </div>
-  </div>
 
-  <!-- 第三阶：系统与赋能 -->
-  <div class="section">
-    <div class="section-title">
-      <span>第三阶：系统与赋能（工程应用层）</span>
-      <span class="badge">手机/电脑均可</span>
+        <div class="footer">电路原理课程 · 交互式教学演示</div>
     </div>
-    <div class="grid">
-      <!-- 预留以后加入的网页 -->
-      <a class="card" href="#">
-        <div class="info">
-          <div class="title">功率因数与无功补偿</div>
-          <div class="desc">拖动电容滑块，观察工厂电费罚款如何变成奖励</div>
-        </div>
-        <div class="arrow">→</div>
-      </a>
-    </div>
-  </div>
-
-  <div class="footer">电路原理课程 · 交互式教学演示</div>
-</div>
 </body>
 </html>
