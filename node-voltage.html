@@ -22,11 +22,15 @@
         .poe-box { background: #fff8f8; border: 2px solid #e74c3c; border-radius: 10px; padding: 15px; text-align: left;}
         .poe-box h3 { margin: 0 0 10px 0; color: #e74c3c; font-size: 18px; }
         .poe-box p { font-size: 15px; line-height: 1.6; margin: 5px 0;}
-        .poe-input-group { display: flex; gap: 10px; margin-top: 10px;}
-        .poe-input-group input { flex: 1; padding: 8px; font-size: 18px; border: 2px solid #3498db; border-radius: 6px; outline: none;}
-        .poe-input-group button { padding: 8px 20px; font-size: 16px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;}
-        .poe-input-group button:hover { background: #2980b9; }
-        .poe-input-group button:disabled { background: #bdc3c7; cursor: not-allowed; }
+        
+        /* POE选项按钮 */
+        .poe-options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .poe-option-btn { padding: 14px 20px; font-size: 20px; font-weight: bold; border: 2px solid #3498db; background: white; color: #2980b9; border-radius: 8px; cursor: pointer; transition: 0.2s; text-align: center; }
+        .poe-option-btn:hover:not(:disabled) { background: #3498db; color: white; }
+        .poe-option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+        .poe-option-btn.correct { background: #22c55e; border-color: #22c55e; color: white; }
+        .poe-option-btn.wrong { background: #ef4444; border-color: #ef4444; color: white; }
+        
         .poe-feedback { margin-top: 10px; font-size: 14px; font-weight: bold; display: none;}
 
         .slider-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -135,9 +139,8 @@
                     <p>仔细观察电路图，图中包含一条 <b>“电流源 Is1 串联电阻 R3”</b> 的特殊支路。</p>
                     <p style="color: #e74c3c; font-weight: bold;" id="poeQuestion">请回答：这条电流源支路对节点①的“电流贡献”是多少安培？</p>
                     <p style="font-size: 13px; color: #7f8c8d;">💡 提示：注意观察电流源箭头方向。流入节点记为正，流出节点记为负。</p>
-                    <div class="poe-input-group">
-                        <input type="text" id="poeInput" placeholder="输入数字（如 5.5 或 -5.5）" inputmode="decimal">
-                        <button id="poeSubmitBtn" onclick="checkPOE()">提交</button>
+                    <div class="poe-options" id="poeOptions">
+                        <!-- 选项由 JS 动态生成 -->
                     </div>
                     <div class="poe-feedback" id="poeFeedback"></div>
                 </div>
@@ -211,21 +214,8 @@
         let is2Direction = 1; 
         let lastU1 = 0;
         let lastU2 = 0;
-
-        // ★ 核心修复：智能解析用户输入（兼容全角/半角数字、各种负号）
-        function parseUserNumber(str) {
-            if (!str) return NaN;
-            return parseFloat(
-                String(str)
-                    // 全角数字 ０-９ → 半角 0-9
-                    .replace(/[\uFF10-\uFF19]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
-                    // 各种负号统一为半角 '-'：全角减号、数学减号、破折号、短破折号、连字符减号
-                    .replace(/[\uFF0D\u2212\u2013\u2014\u2012\uFE63]/g, '-')
-                    // 各种小数点统一为半角 '.'
-                    .replace(/[\uFF0E\u3002\uFF61]/g, '.')
-                    .trim()
-            );
-        }
+        let poeCorrectValue = 0;   // 当前正确值（不暴露给DOM）
+        let userPOEAnswer = null;  // 用户选择的值
 
         function initRandomParams() {
             inputs.v1.value = Math.floor(Math.random() * 15) + 8;
@@ -271,47 +261,88 @@
             }
         }
 
-        function checkPOE() {
+        // ============ POE 选项生成（核心改造） ============
+        function renderPOEOptions() {
+            const Is1 = parseFloat(inputs.is1.value);
+            const R3 = parseFloat(inputs.r3.value);
+            const correctAnswer = is1Direction === 1 ? -Is1 : Is1;
+            poeCorrectValue = correctAnswer;
+
+            // 干扰项
+            const wrongSign = -correctAnswer;            // 符号相反
+            const wrongR3 = correctAnswer * R3;           // 误把串联电阻乘进去
+
+            // 收集候选值并去重（R3=1时可能重复）
+            const candidates = [correctAnswer, wrongSign, wrongR3];
+            const uniqueValues = [];
+            candidates.forEach(v => {
+                const rounded = Math.round(v * 10) / 10;
+                if (!uniqueValues.some(u => Math.abs(u - rounded) < 0.001)) {
+                    uniqueValues.push(rounded);
+                }
+            });
+
+            // 打乱顺序
+            uniqueValues.sort(() => Math.random() - 0.5);
+
+            // 渲染按钮
+            const container = document.getElementById('poeOptions');
+            container.innerHTML = uniqueValues.map(v => 
+                `<button class="poe-option-btn" onclick="selectPOEOption(${v}, this)">${v.toFixed(1)} A</button>`
+            ).join('');
+        }
+
+        function selectPOEOption(value, btn) {
             attemptCount++;
-            const rawVal = document.getElementById('poeInput').value;
-            const ans = parseUserNumber(rawVal);
-            const currentIs1 = parseFloat(inputs.is1.value);
+            userPOEAnswer = value;
 
             const feedbackEl = document.getElementById('poeFeedback');
-            const submitBtn = document.getElementById('poeSubmitBtn');
             feedbackEl.style.display = 'block';
 
-            // NaN 拦截
-            if (isNaN(ans)) {
-                feedbackEl.style.color = '#e74c3c';
-                feedbackEl.textContent = '❌ 请输入有效的数字（如 5.5 或 -5.5）。';
-                return;
-            }
-
-            const correctAnswer = is1Direction === 1 ? -currentIs1 : currentIs1;
-
-            if (ans === correctAnswer) {
+            if (Math.abs(value - poeCorrectValue) < 0.001) {
+                // 正确
                 poePassed = true;
+                btn.classList.add('correct');
                 feedbackEl.style.color = '#2ecc71';
                 feedbackEl.textContent = '✅ 完美！你正确分析了电流源的方向和支路贡献。';
                 document.getElementById('poeBox').style.backgroundColor = '#f0fff0';
                 document.getElementById('poeBox').style.borderColor = '#2ecc71';
-                submitBtn.disabled = true;
+
+                // 禁用所有选项
+                document.querySelectorAll('.poe-option-btn').forEach(b => b.disabled = true);
+
+                // 解锁实验
                 document.getElementById('slidersContainer').style.display = 'flex';
                 update(null);
             } else {
+                // 错误
+                btn.classList.add('wrong');
+                btn.disabled = true;
+
                 feedbackEl.style.color = '#e74c3c';
-                if (ans === currentIs1 * parseFloat(inputs.r3.value) || ans === -currentIs1 * parseFloat(inputs.r3.value)) {
-                    feedbackEl.textContent = '❌ 你误把串联电阻算进去了。电流源输出电流是恒定的，串联电阻不影响它流出的电流大小！';
-                } else if (ans === -correctAnswer) {
+                const Is1 = parseFloat(inputs.is1.value);
+                const R3 = parseFloat(inputs.r3.value);
+                const correctAnswer = poeCorrectValue;
+
+                if (Math.abs(value + correctAnswer) < 0.001) {
                     feedbackEl.textContent = '❌ 数值对了，但方向错了！请仔细观察图中电流源箭头的方向。';
+                } else if (Math.abs(value - correctAnswer * R3) < 0.001 || Math.abs(value + correctAnswer * R3) < 0.001) {
+                    feedbackEl.textContent = '❌ 你误把串联电阻 R3 乘进去了。电流源输出电流恒定，串联电阻不影响其电流贡献！';
                 } else {
-                    feedbackEl.textContent = '❌ 答案不正确。提示：结合KCL，该支路的“电流贡献”与串联电阻有关吗？方向对吗？';
+                    feedbackEl.textContent = '❌ 答案不正确。提示：该支路的“电流贡献”与串联电阻有关吗？方向对吗？';
                 }
+
+                // 3次错误后短暂锁定
                 if (attemptCount >= 3) {
                     feedbackEl.textContent += ' ⚠️ 请仔细思考，等待 3 秒后再试。';
-                    submitBtn.disabled = true;
-                    setTimeout(() => { submitBtn.disabled = false; }, 3000);
+                    document.querySelectorAll('.poe-option-btn').forEach(b => {
+                        if (!b.classList.contains('wrong')) b.disabled = true;
+                    });
+                    setTimeout(() => {
+                        document.querySelectorAll('.poe-option-btn').forEach(b => {
+                            if (!b.classList.contains('wrong')) b.disabled = false;
+                        });
+                    }, 3000);
                 }
             }
         }
@@ -455,10 +486,10 @@
             const r4 = document.getElementById('r4')?.value || '—';
             const is2 = document.getElementById('is2')?.value || '—';
 
-            const poeAnswer = document.getElementById('poeInput')?.value || '未作答';
             const currentIs1 = parseFloat(inputs.is1.value);
             const correctAnswer = is1Direction === 1 ? -currentIs1 : currentIs1;
             const poeStatus = poePassed ? '✅ 通过' : '❌ 未通过';
+            const poeAnswerText = (userPOEAnswer === null) ? '未作答' : (userPOEAnswer.toFixed(1) + ' A');
 
             const dir1Text = (is1Direction === 1) ? 'Is1 向右（流出节点①）' : 'Is1 向左（流入节点①）';
             const dir2Text = (is2Direction === 1) ? 'Is2 向上（流入节点②）' : 'Is2 向下（流出节点②）';
@@ -479,7 +510,7 @@ Is2：${dir2Text}
 
 【POE预测】
 题目：Is1 支路对节点①的电流贡献 = ？
-我的答案：${poeAnswer}
+我的答案：${poeAnswerText}
 正确答案：${correctAnswer.toFixed(1)} A
 状态：${poeStatus}
 
@@ -530,8 +561,10 @@ Is1 串联的 R3 不出现在方程中——因为电流源输出电流恒定，
                 setTimeout(() => tip.remove(), 500); }, 2000);
         }
 
+        // ============ 初始化 ============
         initRandomParams();
         randomizeDirections();
+        renderPOEOptions();
     </script>
 </body>
 </html>
