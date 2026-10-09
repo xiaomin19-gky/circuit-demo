@@ -10,19 +10,15 @@
         .id-badge { background: #e74c3c; color: white; padding: 6px 20px; border-radius: 25px; font-size: 16px; display: inline-block; margin-bottom: 15px; font-weight: bold; box-shadow: 0 4px 10px rgba(231,76,60,0.3);}
         h1 { margin: 0 0 10px 0; font-size: 28px; letter-spacing: 2px;}
 
-        /* 整体布局 */
         .container { width: 100%; max-width: 1400px; display: flex; flex-direction: column; gap: 20px; }
         .top-section { display: flex; gap: 20px; width: 100%; }
         .panel { background: #fff; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); padding: 20px; }
         
-        /* 左侧电路图 */
         .circuit-area { flex: 1.2; display: flex; justify-content: center; align-items: center; min-width: 600px; }
         .circuit-svg { width: 100%; max-width: 650px; height: auto; }
         
-        /* 右侧控制区 */
         .control-area { flex: 0.8; display: flex; flex-direction: column; gap: 15px; min-width: 450px; }
         
-        /* 右侧 POE 预测 */
         .poe-box { background: #fff8f8; border: 2px solid #e74c3c; border-radius: 10px; padding: 15px; text-align: left;}
         .poe-box h3 { margin: 0 0 10px 0; color: #e74c3c; font-size: 18px; }
         .poe-box p { font-size: 15px; line-height: 1.6; margin: 5px 0;}
@@ -33,17 +29,14 @@
         .poe-input-group button:disabled { background: #bdc3c7; cursor: not-allowed; }
         .poe-feedback { margin-top: 10px; font-size: 14px; font-weight: bold; display: none;}
 
-        /* 滑块组 */
         .slider-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .slider-group { display: flex; flex-direction: column; gap: 5px; background: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px solid #e9ecef; }
         .slider-group label { display: flex; justify-content: space-between; font-size: 15px; font-weight: bold; color: #34495e;}
         .slider-group input[type=range] { width: 100%; cursor: pointer; accent-color: #3498db; }
 
-        /* 底部方程区 */
         .equation-area { width: 100%; background: #1e1e2f; color: #fff; padding: 20px; border-radius: 12px; font-family: 'Courier New', monospace; font-size: 18px; line-height: 1.8; border-left: 6px solid #f1c40f; text-align: left; overflow-x: auto;}
         .rule-text { color: #e74c3c; font-weight: bold; font-size: 18px; margin-bottom: 15px; border-bottom: 1px dashed #555; padding-bottom: 10px;}
         
-        /* 动态高亮样式（强效闪烁） */
         .eq-term { color: #abb2bf; transition: all 0.2s; padding: 0 4px; border-radius: 4px; display: inline-block;}
         
         @keyframes flash-bg {
@@ -60,7 +53,6 @@
 
     <div class="container">
         <div class="top-section">
-            <!-- 左侧 SVG 电路图 -->
             <div class="panel circuit-area">
                 <svg class="circuit-svg" viewBox="0 0 650 550" xmlns="http://www.w3.org/2000/svg">
                     <style>
@@ -72,37 +64,25 @@
                         .label-text { fill: #2980b9; font-size: 14px; font-weight: bold; font-family: 'Microsoft YaHei'; }
                     </style>
 
-                    <!-- 连线：节点①到节点② -->
                     <path d="M 180 250 L 300 250" class="wire"/>
                     <path d="M 340 250 L 480 250" class="wire"/>
-                    
-                    <!-- 节点①向下支路 (V1 + R1) -->
                     <path d="M 180 250 L 180 300" class="wire"/>
                     <path d="M 180 340 L 180 380" class="wire"/>
                     <path d="M 180 420 L 180 480" class="wire"/>
                     <path d="M 180 480 L 480 480" class="wire"/>
                     <path d="M 180 480 L 180 510" class="wire"/>
-                    
-                    <!-- 节点①向上支路 (Is1 + R3) 完美水平对齐 -->
                     <path d="M 180 250 L 180 120 L 208 120" class="wire"/>
                     <path d="M 252 120 L 300 120" class="wire"/>
                     <path d="M 340 120 L 480 120 L 480 250" class="wire"/>
-
-                    <!-- 节点②向下支路 (R4) -->
                     <path d="M 480 250 L 480 300" class="wire"/>
                     <path d="M 480 340 L 480 480" class="wire"/>
                     <path d="M 480 480 L 480 510" class="wire"/>
+                    <path d="M 480 250 L 580 250 L 580 368" class="wire"/>
+                    <path d="M 580 412 L 580 480 L 480 480" class="wire"/>
                     
-                    <!-- 节点②向右支路 (Is2) -->
-                    <path d="M 480 250 L 580 250 L 580 370" class="wire"/>
-                    <path d="M 580 410 L 580 480 L 480 480" class="wire"/>
-                    
-                    <!-- 接地符号 -->
                     <path d="M 150 510 L 210 510" class="wire" stroke-width="5"/>
                     <path d="M 450 510 L 510 510" class="wire" stroke-width="5"/>
 
-                    <!-- 元件 -->
-                    <!-- 支路1: V1 电压源 (180, 400) -->
                     <circle cx="180" cy="400" r="22" fill="white" stroke="#2c3e50" stroke-width="3"/>
                     <line x1="165" y1="390" x2="195" y2="390" stroke="#e74c3c" stroke-width="4"/>
                     <line x1="173" y1="410" x2="187" y2="410" stroke="#2c3e50" stroke-width="4"/>
@@ -111,45 +91,36 @@
                     <text x="150" y="390" class="comp-text">+</text>
                     <text x="150" y="420" class="comp-text">-</text>
 
-                    <!-- 支路1: R1 电阻 (180, 320) -->
                     <rect x="165" y="300" width="30" height="40" fill="white" stroke="#2980b9" stroke-width="3"/>
                     <text x="215" y="325" class="val-text" id="svgR1Text">5Ω</text>
                     <text x="215" y="305" class="label-text">R1</text>
 
-                    <!-- 支路2: Is1 电流源 (230, 120) —— 水平支路，横线垂直 -->
                     <circle cx="230" cy="120" r="22" fill="white" stroke="#2c3e50" stroke-width="3"/>
                     <line x1="230" y1="105" x2="230" y2="135" stroke="#2c3e50" stroke-width="3"/>
-                    <!-- 外部箭头 (向右) -->
                     <path d="M 252 120 L 275 120" stroke="#e74c3c" stroke-width="4" id="svgIs1Path"/>
                     <polygon points="275,115 285,120 275,125" fill="#e74c3c" id="svgIs1Arrow"/>
                     <text x="200" y="100" class="label-text">Is1</text>
                     <text x="215" y="150" class="val-text" id="svgIs1Text">5.5A</text>
 
-                    <!-- 支路2: R3 电阻 (320, 120) -->
                     <rect x="300" y="105" width="40" height="30" fill="white" stroke="#2980b9" stroke-width="3"/>
                     <text x="310" y="160" class="val-text" id="svgR3Text">4Ω</text>
                     <text x="310" y="95" class="label-text">R3</text>
 
-                    <!-- 支路3: R2 电阻 (320, 250) -->
                     <rect x="300" y="235" width="40" height="30" fill="white" stroke="#2980b9" stroke-width="3"/>
                     <text x="310" y="290" class="val-text" id="svgR2Text">3Ω</text>
                     <text x="310" y="225" class="label-text">R2</text>
 
-                    <!-- 支路4: R4 电阻 (480, 320) -->
                     <rect x="465" y="300" width="30" height="40" fill="white" stroke="#2980b9" stroke-width="3"/>
                     <text x="515" y="325" class="val-text" id="svgR4Text">1Ω</text>
                     <text x="515" y="305" class="label-text">R4</text>
 
-                    <!-- 支路5: Is2 电流源 (580, 390) -->
                     <circle cx="580" cy="390" r="22" fill="white" stroke="#2c3e50" stroke-width="3"/>
                     <line x1="565" y1="390" x2="595" y2="390" stroke="#2c3e50" stroke-width="3"/>
-                    <!-- 外部箭头 (向上) -->
-                    <path d="M 580 370 L 580 340" stroke="#e74c3c" stroke-width="4" id="svgIs2Path"/>
-                    <polygon points="575,340 580,330 585,340" fill="#e74c3c" id="svgIs2Arrow"/>
+                    <path d="M 580 368 L 580 348" stroke="#e74c3c" stroke-width="4" id="svgIs2Path"/>
+                    <polygon points="575,348 580,338 585,348" fill="#e74c3c" id="svgIs2Arrow"/>
                     <text x="615" y="385" class="label-text">Is2</text>
                     <text x="615" y="405" class="val-text" id="svgIs2Text">2.0A</text>
 
-                    <!-- 节点标记 -->
                     <circle cx="180" cy="250" r="7" class="node"/>
                     <text x="145" y="240" class="node-text">①</text>
                     <circle cx="480" cy="250" r="7" class="node"/>
@@ -158,7 +129,6 @@
                 </svg>
             </div>
 
-            <!-- 右侧控制区 -->
             <div class="panel control-area">
                 <div class="poe-box" id="poeBox">
                     <h3>🔒 POE预测：请先回答正确，才能解锁实验！</h3>
@@ -213,9 +183,17 @@
             </div>
         </div>
 
-        <!-- 下半部分：方程展示区 -->
         <div class="equation-area" id="matrixBox">
-            <!-- 动态渲染 -->
+        </div>
+
+        <!-- 导出学习报告按钮 -->
+        <div style="text-align:center; margin: 10px 0 30px 0;">
+            <button id="btnExport" onclick="exportReport()" 
+                    style="padding: 14px 40px; font-size: 18px; font-weight: bold; 
+                           background: #3498db; color: white; border: none; 
+                           border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(52,152,219,0.3);">
+                📋 导出学习报告（复制后粘贴到学习通）
+            </button>
         </div>
     </div>
 
@@ -229,8 +207,26 @@
 
         let poePassed = false;
         let attemptCount = 0;
-        let is1Direction = 1; // 1 表示向右(流出①流入②)，-1 表示向左(流入①流出②)
-        let is2Direction = 1; // 1 表示向上(流入②)，-1 表示向下(流出②)
+        let is1Direction = 1; 
+        let is2Direction = 1; 
+        let lastU1 = 0; // 记录最近一次求解结果
+        let lastU2 = 0;
+
+        function initRandomParams() {
+            inputs.v1.value = Math.floor(Math.random() * 15) + 8;
+            inputs.is1.value = (Math.random() * 5 + 3).toFixed(1);
+            inputs.r1.value = Math.floor(Math.random() * 8) + 2;
+            inputs.r2.value = Math.floor(Math.random() * 8) + 2;
+            inputs.r3.value = Math.floor(Math.random() * 8) + 2;
+            inputs.r4.value = Math.floor(Math.random() * 8) + 2;
+            inputs.is2.value = (Math.random() * 3 + 1).toFixed(1);
+            
+            sliders.forEach(id => {
+                const displayId = id + 'Val';
+                const unit = id.startsWith('v') ? ' V' : (id.startsWith('r') ? ' Ω' : ' A');
+                document.getElementById(displayId).textContent = inputs[id].value + unit;
+            });
+        }
 
         function randomizeDirections() {
             is1Direction = Math.random() > 0.5 ? 1 : -1;
@@ -252,11 +248,11 @@
             }
 
             if (is2Direction === 1) {
-                is2Path.setAttribute('d', 'M 580 370 L 580 340');
-                is2Arrow.setAttribute('points', '575,340 580,330 585,340');
+                is2Path.setAttribute('d', 'M 580 368 L 580 348');
+                is2Arrow.setAttribute('points', '575,348 580,338 585,348');
             } else {
-                is2Path.setAttribute('d', 'M 580 340 L 580 370');
-                is2Arrow.setAttribute('points', '575,370 580,380 585,370');
+                is2Path.setAttribute('d', 'M 580 368 L 580 388');
+                is2Arrow.setAttribute('points', '575,388 580,398 585,388');
             }
         }
 
@@ -265,7 +261,6 @@
             const ans = parseFloat(document.getElementById('poeInput').value);
             const currentIs1 = parseFloat(inputs.is1.value);
             
-            // 如果Is1向右（流出①），贡献为负；如果向左（流入①），贡献为正
             const correctAnswer = is1Direction === 1 ? -currentIs1 : currentIs1;
 
             const feedbackEl = document.getElementById('poeFeedback');
@@ -325,14 +320,11 @@
             document.getElementById('svgR4Text').textContent = R4 + 'Ω';
             document.getElementById('svgIs2Text').textContent = Is2.toFixed(1) + 'A';
 
-            // 统一使用“流入为正，流出为负”的规则
-            // 节点①注入电流 = V1/R1 + Is1流入①
-            const Is1_into_A = is1Direction === 1 ? -Is1 : Is1; // 向右是流出①，所以注入①为负
+            const Is1_into_A = is1Direction === 1 ? -Is1 : Is1; 
             const IsA = (V1 / R1) + Is1_into_A;
 
-            // 节点②注入电流 = Is1流入② + Is2流入②
-            const Is1_into_B = is1Direction === 1 ? Is1 : -Is1; // 向右是流入②，所以注入②为正
-            const Is2_into_B = is2Direction === 1 ? Is2 : -Is2; // 向上是流入②，所以注入②为正
+            const Is1_into_B = is1Direction === 1 ? Is1 : -Is1; 
+            const Is2_into_B = is2Direction === 1 ? Is2 : -Is2; 
             const IsB = Is1_into_B + Is2_into_B;
 
             const G11 = (1/R1) + (1/R2);
@@ -344,7 +336,9 @@
             const U1 = (IsA * G22 - IsB * G12) / det;
             const U2 = (G11 * IsB - G21 * IsA) / det;
 
-            // 构建公式字符串（精准匹配符号）
+            lastU1 = U1;
+            lastU2 = U2;
+
             let is1SignA = Is1_into_A >= 0 ? '+' : '-';
             let is1SignB = Is1_into_B >= 0 ? '+' : '-';
             let is2SignB = Is2_into_B >= 0 ? '+' : '-';
@@ -427,6 +421,93 @@
             });
         });
 
+        // ==================== 导出学习报告 ====================
+        function exportReport() {
+            const stuID = document.getElementById('antiCheatID').textContent;
+            const v1 = document.getElementById('v1')?.value || '—';
+            const is1 = document.getElementById('is1')?.value || '—';
+            const r1 = document.getElementById('r1')?.value || '—';
+            const r2 = document.getElementById('r2')?.value || '—';
+            const r3 = document.getElementById('r3')?.value || '—';
+            const r4 = document.getElementById('r4')?.value || '—';
+            const is2 = document.getElementById('is2')?.value || '—';
+
+            const poeAnswer = document.getElementById('poeInput')?.value || '未作答';
+            const currentIs1 = parseFloat(inputs.is1.value);
+            const correctAnswer = is1Direction === 1 ? -currentIs1 : currentIs1;
+            const poeStatus = poePassed ? '✅ 通过' : '❌ 未通过';
+
+            const dir1Text = (is1Direction === 1) ? 'Is1 向右（流出节点①）' : 'Is1 向左（流入节点①）';
+            const dir2Text = (is2Direction === 1) ? 'Is2 向上（流入节点②）' : 'Is2 向下（流出节点②）';
+
+            const u1Text = poePassed ? lastU1.toFixed(2) + ' V' : '未求解';
+            const u2Text = poePassed ? lastU2.toFixed(2) + ' V' : '未求解';
+
+            const report =
+`━━━━━━━━━━━━━━━━━━━━━━
+📘 节点电压法 · 学习报告
+━━━━━━━━━━━━━━━━━━━━━━
+学生ID：${stuID}
+参数设定：V1=${v1}V, Is1=${is1}A, R1=${r1}Ω, R2=${r2}Ω, R3=${r3}Ω, R4=${r4}Ω, Is2=${is2}A
+
+【电流源方向】
+Is1：${dir1Text}
+Is2：${dir2Text}
+
+【POE预测】
+题目：Is1 支路对节点①的电流贡献 = ？
+我的答案：${poeAnswer}
+正确答案：${correctAnswer.toFixed(1)} A
+状态：${poeStatus}
+
+【最终结果】
+节点①电压 U1 = ${u1Text}
+节点②电压 U2 = ${u2Text}
+
+【核心认知】
+Is1 串联的 R3 不出现在方程中——因为电流源输出电流恒定，串联电阻不影响其电流贡献。
+━━━━━━━━━━━━━━━━━━━━━━
+请将此报告复制粘贴到学习通作业提交框中。`;
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(report).then(() => {
+                    showToast('✅ 学习报告已复制！请粘贴到学习通。');
+                }).catch(() => {
+                    fallbackCopy(report);
+                });
+            } else {
+                fallbackCopy(report);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                showToast('✅ 学习报告已复制！请粘贴到学习通。');
+            } catch (e) {
+                alert('复制失败，请手动复制以下内容：\n\n' + text);
+            }
+            document.body.removeChild(ta);
+        }
+
+        function showToast(msg) {
+            const tip = document.createElement('div');
+            tip.textContent = msg;
+            tip.style.cssText = 'position:fixed;top:30px;left:50%;transform:translateX(-50%);' +
+                'background:#22c55e;color:white;padding:14px 30px;border-radius:10px;' +
+                'font-size:16px;font-weight:bold;z-index:99999;box-shadow:0 5px 20px rgba(0,0,0,0.2);';
+            document.body.appendChild(tip);
+            setTimeout(() => { tip.style.opacity = '0'; tip.style.transition = 'opacity 0.5s'; 
+                setTimeout(() => tip.remove(), 500); }, 2000);
+        }
+
+        initRandomParams();
         randomizeDirections();
     </script>
 </body>
