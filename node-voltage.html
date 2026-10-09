@@ -209,7 +209,7 @@
         let attemptCount = 0;
         let is1Direction = 1; 
         let is2Direction = 1; 
-        let lastU1 = 0; // 记录最近一次求解结果
+        let lastU1 = 0;
         let lastU2 = 0;
 
         function initRandomParams() {
@@ -258,14 +258,28 @@
 
         function checkPOE() {
             attemptCount++;
-            const ans = parseFloat(document.getElementById('poeInput').value);
-            const currentIs1 = parseFloat(inputs.is1.value);
+            let rawVal = document.getElementById('poeInput').value.trim();
             
-            const correctAnswer = is1Direction === 1 ? -currentIs1 : currentIs1;
+            // ✅ 修复：将全角数字转为半角
+            rawVal = rawVal.replace(/[０-９]/g, function(s) {
+                return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+            }).replace(/．/g, '.');
+            
+            const ans = parseFloat(rawVal);
+            const currentIs1 = parseFloat(inputs.is1.value);
 
             const feedbackEl = document.getElementById('poeFeedback');
             const submitBtn = document.getElementById('poeSubmitBtn');
             feedbackEl.style.display = 'block';
+
+            // ✅ 修复：拦截 NaN（比如用户输入了非数字内容）
+            if (isNaN(ans)) {
+                feedbackEl.style.color = '#e74c3c';
+                feedbackEl.textContent = '❌ 请输入有效的数字（建议切换到半角输入法）。';
+                return;
+            }
+            
+            const correctAnswer = is1Direction === 1 ? -currentIs1 : currentIs1;
 
             if (ans === correctAnswer) {
                 poePassed = true;
