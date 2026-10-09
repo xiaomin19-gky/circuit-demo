@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+                    <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -36,7 +36,6 @@
         .btn-reshape:hover { background: #9333ea; }
         .btn-disabled { background: #e9ecef; color: #adb5bd; cursor: not-allowed; }
 
-        /* 前置思考卡片 */
         .prep-box { background: #f8f9fa; border: 2px solid #3498db; border-radius: 10px; padding: 20px; margin-top: 15px; display: none; text-align: left;}
         .prep-box h3 { margin: 0 0 15px 0; color: #2980b9; font-size: 18px; border-bottom: 1px dashed #ccc; padding-bottom: 10px;}
         .prep-step { margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef; }
@@ -119,7 +118,6 @@
                     <path d="M 150 100 L 150 350 L 500 350 L 500 100 L 150 100" class="wire"/>
                     <path d="M 325 100 L 325 350" class="wire"/> 
 
-                    <!-- 左支路: V1, R1 -->
                     <circle cx="150" cy="200" r="22" fill="white" stroke="#2c3e50" stroke-width="3"/>
                     <line x1="135" y1="190" x2="165" y2="190" stroke="#e74c3c" stroke-width="4"/>
                     <line x1="143" y1="210" x2="157" y2="210" stroke="#2c3e50" stroke-width="4"/>
@@ -129,7 +127,6 @@
                     <text x="185" y="145" class="val-text" id="svgR1Text">5Ω</text>
                     <text x="185" y="125" class="label-text">R1</text>
 
-                    <!-- 右支路: R3, V2 -->
                     <rect x="485" y="120" width="30" height="40" fill="white" stroke="#2980b9" stroke-width="3"/>
                     <text x="535" y="145" class="val-text" id="svgR3Text">3Ω</text>
                     <text x="535" y="125" class="label-text">R3</text>
@@ -139,7 +136,6 @@
                     <text x="535" y="205" class="val-text" id="svgV2Text">6V</text>
                     <text x="535" y="225" class="label-text">V2</text>
 
-                    <!-- 中间支路: Is, R2 -->
                     <circle cx="325" cy="150" r="22" fill="white" stroke="#2c3e50" stroke-width="3"/>
                     <line x1="310" y1="150" x2="340" y2="150" stroke="#2c3e50" stroke-width="3"/>
                     <path d="M 325 128 L 325 108" stroke="#e74c3c" stroke-width="4" id="svgIsPath"/>
@@ -151,14 +147,12 @@
                     <text x="360" y="245" class="val-text" id="svgR2Text">2Ω</text>
                     <text x="360" y="225" class="label-text">R2</text>
 
-                    <!-- Us1 极性指示（默认隐藏） -->
                     <g id="us1PolarityGroup" opacity="0">
                         <text x="295" y="120" fill="#2c3e50" font-size="20" font-weight="bold" id="us1Minus">-</text>
                         <text x="295" y="180" fill="#e74c3c" font-size="18" font-weight="bold" id="us1Plus">+</text>
                         <text x="258" y="155" fill="#e74c3c" font-size="15" font-weight="bold" id="us1Label">Us1</text>
                     </g>
 
-                    <!-- 常规回路：I1向下, I2向上 同时显示 -->
                     <g id="standardLoops">
                         <path d="M 175 120 L 220 120 L 220 330 L 175 330 Z" class="flow-blue"/>
                         <path d="M 315 120 L 315 330" class="flow-blue" style="opacity: 0.8;"/>
@@ -179,7 +173,6 @@
                         <text x="440" y="90" fill="#e06c75" font-weight="bold" font-size="16">回路② (I2 顺时针)</text>
                     </g>
 
-                    <!-- 重塑后的回路 -->
                     <g id="flexibleLoops" opacity="0">
                         <path d="M 120 80 L 520 80 L 520 360 L 120 360 Z" class="flow-purple"/>
                         <polygon points="310,75 325,80 310,85" fill="#a855f7"/>
@@ -201,10 +194,7 @@
                     </g>
                 </svg>
                 
-                <!-- 动态参数卡片 -->
-                <div class="param-box" id="paramBox" style="display: none;">
-                    <!-- 内容由 JS 动态生成 -->
-                </div>
+                <div class="param-box" id="paramBox" style="display: none;"></div>
             </div>
 
             <div class="panel control-area">
@@ -227,11 +217,9 @@
                     <button class="step-btn btn-reshape btn-disabled" id="btnReshape" onclick="reshapeLoop()" disabled>2. 尝试重塑回路 (令 I1 = Is)</button>
                 </div>
 
-                <!-- 前置思考卡片 -->
                 <div class="prep-box" id="prepBox">
                     <h3>🧠 列写方程前的思考</h3>
                     
-                    <!-- 步骤1：电流源电压 -->
                     <div class="prep-step" id="prepStep1">
                         <h4>思考1：常规回路法中，回路经过电流源时，是否需要考虑电流源的端电压？</h4>
                         <p>仔细观察中间支路，电流源串联了电阻 R2。</p>
@@ -242,7 +230,6 @@
                         <div class="prep-result" id="prepResult1"></div>
                     </div>
 
-                    <!-- 步骤2：互阻方向（默认隐藏） -->
                     <div class="prep-step" id="prepStep2" style="display: none;">
                         <h4>思考2：判断互阻的正负号</h4>
                         <p>回路①的电流 I1 <b>向下</b>流过 R2，回路②的电流 I2 <b>向上</b>流过 R2。</p>
@@ -288,7 +275,6 @@
                     </div>
                 </div>
 
-                <!-- 方向卡片（重塑后显示） -->
                 <div class="direction-card" id="directionCard">
                     <h4>🔁 对比不同回路绕行方向 (电流源方向)</h4>
                     <div class="direction-btns">
@@ -303,9 +289,7 @@
             </div>
         </div>
 
-        <div class="equation-area" id="matrixBox">
-            <!-- 动态渲染 -->
-        </div>
+        <div class="equation-area" id="matrixBox"></div>
 
         <div class="cross-method-box" id="crossMethodBox">
             <h4>🤔 跨方法对比：在节点电压法中，这个串联电阻怎么处理？</h4>
@@ -333,6 +317,16 @@
                 <li><b>公共电阻计入：</b>在重塑回路时，<b>外圈大回路的KVL方程不会包含内部支路的电阻（如 R2）</b>，其电压降由回路电流差决定，而在方程相加时会自动抵消。</li>
             </ol>
         </div>
+
+        <!-- 导出学习报告按钮 -->
+        <div style="text-align:center; margin: 10px 0 30px 0;">
+            <button id="btnExport" onclick="exportReport()" 
+                    style="padding: 14px 40px; font-size: 18px; font-weight: bold; 
+                           background: #3498db; color: white; border: none; 
+                           border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(52,152,219,0.3);">
+                📋 导出学习报告（复制后粘贴到学习通）
+            </button>
+        </div>
     </div>
 
     <script>
@@ -347,13 +341,12 @@
         let isDirection = -1;
         let currentState = 'prediction'; 
         let flashTarget = null;
-        
-        // 前置思考进度：0=初始, 1=思考1完成, 2=思考2完成，可以显示方程
-        let prepProgress = 0; 
-        let us1Considered = false; // 是否选择考虑 Us1
+        let prepProgress = 0;
+        let us1Considered = false;
+        let mutualDirection = ''; // 记录互阻方向选择
 
         function initOrLoadParams() {
-            let savedData = localStorage.getItem('circuit_loop_task_v22');
+            let savedData = localStorage.getItem('circuit_loop_task_v23');
             if (savedData) {
                 const data = JSON.parse(savedData);
                 inputs.v1.value = data.v1; inputs.v2.value = data.v2;
@@ -383,7 +376,7 @@
                 r3: inputs.r3.value, is: inputs.is.value,
                 isDirection: isDirection
             };
-            localStorage.setItem('circuit_loop_task_v22', JSON.stringify(dataToSave));
+            localStorage.setItem('circuit_loop_task_v23', JSON.stringify(dataToSave));
         }
 
         function updateSliderLabels() {
@@ -470,7 +463,6 @@
             document.getElementById('btnReshape').disabled = true;
             document.getElementById('btnReshape').classList.add('btn-disabled');
             
-            // 隐藏方程，显示前置思考
             document.getElementById('matrixBox').style.display = 'none';
             document.getElementById('prepBox').style.display = 'block';
             document.getElementById('prepStep1').style.display = 'block';
@@ -478,38 +470,33 @@
             document.getElementById('prepResult1').style.display = 'none';
             document.getElementById('prepResult2').style.display = 'none';
             
-            // 初始隐藏 Us1 极性标注
             document.getElementById('us1PolarityGroup').style.opacity = '0';
             
             document.getElementById('slidersContainer').style.display = 'flex';
             document.getElementById('rulesBox').style.display = 'block';
-            document.getElementById('directionCard').style.display = 'none'; // 常规法阶段不显示方向卡片
+            document.getElementById('directionCard').style.display = 'none';
             
             updateParamBox();
             update();
         }
 
-        // 回答思考1：是否需要考虑电流源电压
         function answerUs1(choice) {
             const result = document.getElementById('prepResult1');
             result.style.display = 'block';
             
             const btns = document.querySelectorAll('#prepStep1 .prep-btn');
-            btns.forEach(btn => btn.classList.remove('active', 'correct', 'wrong'));
+            btns.forEach(btn => btn.classList.remove('correct', 'wrong'));
             
             if (choice === '需要考虑') {
                 event.target.classList.add('correct');
                 result.className = 'prep-result correct';
                 result.innerHTML = '✅ 正确！电流源两端确实存在电压 Us1，这是一个未知的辅助变量。请看左侧电路图，已为你标注并高亮 Us1 的极性（上负下正）。';
                 
-                // 显示并高亮 Us1 极性
                 document.getElementById('us1PolarityGroup').style.opacity = '1';
                 document.getElementById('us1Plus').classList.add('flash-active');
                 document.getElementById('us1Minus').classList.add('flash-active');
                 
                 us1Considered = true;
-                
-                // 解锁思考2
                 document.getElementById('prepStep2').style.display = 'block';
                 
             } else {
@@ -519,25 +506,23 @@
             }
         }
 
-        // 回答思考2：判断互阻方向
         function answerMutual(choice) {
+            mutualDirection = choice; // 记录选择
             const result = document.getElementById('prepResult2');
             result.style.display = 'block';
             
             const btns = document.querySelectorAll('#prepStep2 .prep-btn');
-            btns.forEach(btn => btn.classList.remove('active', 'correct', 'wrong'));
+            btns.forEach(btn => btn.classList.remove('correct', 'wrong'));
             
             if (choice === '相反') {
                 event.target.classList.add('correct');
                 result.className = 'prep-result correct';
                 result.innerHTML = '✅ 正确！方向相反，所以互阻项为<b>负</b>（-R2）。<br>这与节点电压法中的互导恒为负<b>不同</b>，是回路电流法特有的。';
                 
-                // 完成前置思考，显示方程
                 prepProgress = 2;
                 document.getElementById('prepBox').style.display = 'none';
                 document.getElementById('matrixBox').style.display = 'block';
                 
-                // 解锁重塑按钮
                 document.getElementById('btnReshape').disabled = false;
                 document.getElementById('btnReshape').classList.remove('btn-disabled');
                 
@@ -559,7 +544,6 @@
             document.getElementById('btnReshape').textContent = '✅ 已重塑回路 (外圈大回路)';
             
             document.getElementById('crossMethodBox').style.display = 'block';
-            // 重塑后显示方向卡片
             document.getElementById('directionCard').style.display = 'block';
             
             updateParamBox();
@@ -626,7 +610,6 @@
 
             const matrixBox = document.getElementById('matrixBox');
             
-            // 在 prediction 状态，或者 conventional 状态但前置思考还没完成时，隐藏方程
             if (currentState === 'prediction' || (currentState === 'conventional' && prepProgress < 2)) {
                 matrixBox.style.display = 'none';
                 return;
@@ -734,6 +717,91 @@
         inputs.r2.addEventListener('input', () => { flashTarget = 'eq-r2'; });
         inputs.r3.addEventListener('input', () => { flashTarget = 'eq-r3'; });
         inputs.is.addEventListener('input', () => { flashTarget = 'eq-is'; });
+
+        // ==================== 导出学习报告 ====================
+        function exportReport() {
+            const stuID = document.getElementById('antiCheatID').textContent;
+            const v1 = document.getElementById('v1')?.value || '—';
+            const v2 = document.getElementById('v2')?.value || '—';
+            const r1 = document.getElementById('r1')?.value || '—';
+            const r2 = document.getElementById('r2')?.value || '—';
+            const r3 = document.getElementById('r3')?.value || '—';
+            const is = document.getElementById('is')?.value || '—';
+
+            const prediction = userPrediction || '未预测';
+            const dirText = (isDirection === -1) ? 'Is向下 (I1 = +Is)' : 'Is向上 (I1 = -Is)';
+            const i2Result = document.getElementById('eq-i2-val')?.textContent || '未求解';
+
+            const stateText = {
+                'prediction': '仅完成POE预测',
+                'conventional': '常规回路法（遭遇死局）',
+                'reshaped': '已重塑回路并求解'
+            }[currentState] || '未知';
+
+            const us1Text = us1Considered ? '需要考虑（正确）' : '未完成或错误';
+            const mutualText = mutualDirection || '未判断';
+
+            const report =
+`━━━━━━━━━━━━━━━━━━━━━━
+📘 回路电流法 · 学习报告
+━━━━━━━━━━━━━━━━━━━━━━
+学生ID：${stuID}
+参数设定：V1=${v1}V, V2=${v2}V, R1=${r1}Ω, R2=${r2}Ω, R3=${r3}Ω, Is=${is}A
+学习阶段：${stateText}
+
+【POE预测】
+我预测回路电流法列的是：${prediction}
+复盘：${prediction === 'KVL' ? '✅ 正确' : (prediction === 'KCL' ? '❌ 掉入陷阱，实际是KVL' : '未预测')}
+
+【前置思考】
+思考1 - 电流源端电压是否需要考虑：${us1Text}
+思考2 - 互阻方向：${mutualText}
+
+【电流方向】
+${dirText}
+
+【最终结果】
+${currentState === 'reshaped' ? '外圈大回路解出 I2 = ' + i2Result : '尚未完成重塑回路，未求出 I2'}
+━━━━━━━━━━━━━━━━━━━━━━
+请将此报告复制粘贴到学习通作业提交框中。`;
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(report).then(() => {
+                    showToast('✅ 学习报告已复制！请粘贴到学习通。');
+                }).catch(() => {
+                    fallbackCopy(report);
+                });
+            } else {
+                fallbackCopy(report);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                showToast('✅ 学习报告已复制！请粘贴到学习通。');
+            } catch (e) {
+                alert('复制失败，请手动复制以下内容：\n\n' + text);
+            }
+            document.body.removeChild(ta);
+        }
+
+        function showToast(msg) {
+            const tip = document.createElement('div');
+            tip.textContent = msg;
+            tip.style.cssText = 'position:fixed;top:30px;left:50%;transform:translateX(-50%);' +
+                'background:#22c55e;color:white;padding:14px 30px;border-radius:10px;' +
+                'font-size:16px;font-weight:bold;z-index:99999;box-shadow:0 5px 20px rgba(0,0,0,0.2);';
+            document.body.appendChild(tip);
+            setTimeout(() => { tip.style.opacity = '0'; tip.style.transition = 'opacity 0.5s'; 
+                setTimeout(() => tip.remove(), 500); }, 2000);
+        }
 
         window.onload = () => {
             initOrLoadParams();
