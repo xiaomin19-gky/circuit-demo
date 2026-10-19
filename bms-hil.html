@@ -102,6 +102,7 @@
 
         let port, reader, isConnected = false;
         let newData = []; let oldData = [];
+        let serialBuffer = ""; // 串口数据缓冲区
 
         // 绘图函数 (适配 760x380 尺寸)
         function drawChart(canvasId, Vth, Rth, data, color) {
@@ -110,7 +111,8 @@
             const width = canvas.width; const height = canvas.height;
             ctx.clearRect(0, 0, width, height);
             
-            const maxR = 250; const maxP = 150; 
+            // ⭐️ 修改：横坐标最大值改为 1000，纵坐标最大值保持 150
+            const maxR = 1000; const maxP = 150; 
             const padLeft = 80, padBottom = 55, padTop = 25, padRight = 25;
             const drawW = width - padLeft - padRight;
             const drawH = height - padBottom - padTop;
@@ -123,7 +125,8 @@
 
             // 横坐标
             ctx.fillStyle = '#333'; ctx.font = 'bold 20px Arial'; ctx.textAlign = 'center';
-            for(let i = 0; i <= maxR; i += 50) {
+            // ⭐️ 修改：刻度间距改为 100
+            for(let i = 0; i <= maxR; i += 100) {
                 let x = padLeft + (i / maxR) * drawW;
                 ctx.beginPath(); ctx.moveTo(x, height - padBottom); ctx.lineTo(x, height - padBottom + 8); ctx.stroke();
                 ctx.fillText(i, x, height - padBottom + 30);
@@ -183,26 +186,51 @@
                 isConnected = true;
                 document.getElementById('connectBtn').textContent = '✅ 已连接';
                 document.getElementById('connectBtn').style.background = '#2ecc71';
+                
                 const textDecoder = new TextDecoderStream();
                 port.readable.pipeTo(textDecoder.writable);
                 reader = textDecoder.readable.getReader();
+                
+                serialBuffer = ""; 
+
                 while (true) {
                     const { value, done } = await reader.read();
                     if (done) break;
+                    
                     if (value) {
-                        value.trim().split('\n').forEach(line => {
-                            if (line) {
-                                const parts = line.split(',');
-                                if (parts.length === 3) {
-                                    document.getElementById('voltage').textContent = parseFloat(parts[0]).toFixed(2);
-                                    document.getElementById('current').textContent = parseFloat(parts[1]).toFixed(2);
-                                    document.getElementById('power').textContent = parseFloat(parts[2]).toFixed(2);
+                        // 将新收到的碎片数据拼接到缓冲区
+                        serialBuffer += value;
+                        
+                        // 按换行符分割
+                        let lines = serialBuffer.split('\n');
+                        
+                        // 最后一段可能是不完整的半截数据，留在缓冲区里等下一次数据来拼凑
+                        serialBuffer = lines.pop();
+                        
+                        // 处理完整的每一行
+                        for (let line of lines) {
+                            line = line.trim(); // 去掉末尾的 \r
+                            if (line.length === 0) continue;
+                            
+                            const parts = line.split(',');
+                            if (parts.length === 3) {
+                                const v = parseFloat(parts[0]);
+                                const i = parseFloat(parts[1]);
+                                const p = parseFloat(parts[2]);
+                                
+                                // 确保解析出来的是有效数字
+                                if (!isNaN(v) && !isNaN(i) && !isNaN(p)) {
+                                    document.getElementById('voltage').textContent = v.toFixed(2);
+                                    document.getElementById('current').textContent = i.toFixed(2);
+                                    document.getElementById('power').textContent = p.toFixed(2);
                                 }
                             }
-                        });
+                        }
                     }
                 }
-            } catch (err) { alert('连接失败：' + err); }
+            } catch (err) { 
+                alert('连接失败：' + err); 
+            }
         });
 
         function recordData(dataArray) {
