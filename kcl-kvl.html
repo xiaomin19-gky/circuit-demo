@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>基尔霍夫定律 · 体验与凭证</title>
+<style>
+:root{
+  --bg:#0a0f1c; --panel:#121a2c; --line:#22304d; --text:#e8eefc;
+  --muted:#8ea0c6; --cyan:#22d3ee; --amber:#fbbf24; --green:#34d399;
+  --pink:#f472b6; --violet:#a78bfa; --gray:#4a6a9e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  background:radial-gradient(900px 500px at 50% -10%, #16294a 0%, transparent 60%), var(--bg);
+  color:var(--text); min-height:100vh; display:flex; justify-content:center; padding:30px 20px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1400px; width:100%;}
+header{display:flex;align-items:center;gap:20px;margin-bottom:24px}
+.logo{width:60px;height:60px;border-radius:16px;display:grid;place-items:center;font-size:30px;background:linear-gradient(135deg,#22d3ee,#6366f1);box-shadow:0 8px 30px rgba(34,211,238,.3);}
+h1{font-size:28px;font-weight:700;letter-spacing:.5px}
+header p{color:var(--muted);font-size:16px;margin-top:6px}
+
+.tabs{display:flex;gap:12px;margin-bottom:24px}
+.tab-btn{
+  flex:1; max-width:260px; padding:14px; border-radius:12px; border:1px solid var(--line);
+  background:rgba(255,255,255,.02); color:var(--muted); font-size:18px; font-weight:bold; cursor:pointer; transition:.2s;
+}
+.tab-btn.active{background:rgba(34,211,238,.15); border-color:var(--cyan); color:var(--cyan)}
+
+.lab{display:grid;grid-template-columns:1fr 550px;gap:24px;align-items:start}
+@media(max-width:1100px){.lab{grid-template-columns:1fr}}
+
+.stage{
+  background:#ffffff; border:1px solid var(--line); border-radius:20px; padding:10px;
+  box-shadow:0 20px 50px -20px rgba(0,0,0,.85); position:relative;
+}
+canvas{display:block;width:100%;height:600px;border-radius:14px;cursor:pointer;}
+
+.card{
+  background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.008));
+  border:1px solid var(--line); border-radius:20px; padding:24px; margin-bottom:20px;
+}
+.card h3{font-size:20px;color:var(--cyan);margin-bottom:18px;border-bottom:2px solid rgba(34,211,238,.2);padding-bottom:12px; display:flex; justify-content:space-between;}
+
+.eq-box{
+  background:#0b1120; border:1px dashed var(--amber); border-radius:14px; padding:24px;
+  font-family:ui-monospace,Consolas,monospace; font-size:18px; line-height:2.2; margin-bottom:20px;
+}
+.eq-box .val-pos{ color:var(--cyan); font-weight:bold;}
+.eq-box .val-neg{ color:var(--pink); font-weight:bold;}
+
+.poe-box {
+  display: none; background: rgba(251,191,36,.08); border: 2px solid var(--amber);
+  border-radius: 14px; padding: 24px; margin-bottom: 20px;
+}
+.poe-box.active { display: block; animation: fadeIn .3s ease; }
+.poe-title { font-size: 18px; font-weight: bold; color: var(--amber); margin-bottom: 18px; line-height: 1.6; }
+.poe-opt {
+  width: 100%; border: 1px solid rgba(251,191,36,.3); background: rgba(251,191,36,.1); color: #fff;
+  padding: 16px; border-radius: 10px; cursor: pointer; font-size: 16px; font-family: inherit;
+  margin-bottom: 12px; text-align: left; transition: 0.2s; line-height: 1.6;
+}
+.poe-opt:hover { background: rgba(251,191,36,.2); border-color: var(--amber); }
+
+.poe-feedback {
+  margin-top: 16px; padding: 16px; border-radius: 10px; font-size: 16px; display: none; line-height: 1.7;
+}
+.poe-feedback.error { display: block; background: rgba(244,114,182,.1); border-left: 5px solid var(--pink); color: #fff; }
+.poe-feedback.success { display: block; background: rgba(52,211,153,.1); border-left: 5px solid var(--green); color: #fff; }
+
+.kv{display:flex;justify-content:space-between;font-size:16px;padding:12px 0;border-bottom:1px dashed rgba(90,130,200,.18);}
+.kv span:first-child{color:var(--muted);}
+.kv span:last-child{font-weight:600;}
+
+.btn{
+  border:1px solid var(--line); background:rgba(255,255,255,.04); color:var(--text);
+  padding:14px 20px; border-radius:12px; cursor:pointer; font-size:16px; font-weight:bold; font-family:inherit; transition:.2s; width:100%;
+}
+.btn:hover{background:rgba(34,211,238,.12); border-color:rgba(34,211,238,.4);}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; background: #22304d; }
+
+textarea{
+  width:100%;margin-top:16px;font-family:ui-monospace,Consolas,monospace;font-size:15px;line-height:1.8;
+  background:#0b1120;color:#c8d6f0;border:1px solid #22304d;border-radius:12px;padding:16px;resize:vertical; display:none;
+}
+textarea.show{display:block;}
+.warn-text {
+  color: var(--pink); font-size: 15px; font-weight: 600; margin-top: 12px; 
+  display: none; line-height: 1.5; text-align: center;
+  background: rgba(244,114,182,.1); padding: 12px; border-radius: 10px; border: 1px solid rgba(244,114,182,.3);
+}
+.warn-text.show { display: block; animation: shake .4s; }
+@keyframes fadeIn { from{opacity:0; transform:translateY(-5px)} to{opacity:1; transform:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">⚡</div>
+    <div>
+      <h1>基尔霍夫定律 · 拓扑与方程映射</h1>
+      <p>请先在此完成体验，然后生成凭证返回学习通进行测验</p>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('kcl')">节点 KCL (电流)</button>
+    <button class="tab-btn" onclick="switchTab('kvl')">回路 KVL (电压)</button>
+  </div>
+
+  <div class="lab">
+    <div class="stage" id="canvas-stage">
+      <canvas id="cv-kirchhoff"></canvas>
+    </div>
+
+    <div>
+      <div class="card" id="panel-kcl">
+        <h3>节点方程推演</h3>
+        <div class="poe-box" id="kcl-poe">
+          <div class="poe-title" id="kcl-poe-title">预测...</div>
+          <div id="kcl-poe-opts"></div>
+        </div>
+        <div class="eq-box" id="kcl-eq"></div>
+        <div id="kcl-feedback" class="poe-feedback"></div>
+        <div class="kv"><span>操作提示</span><span>点击画布中的电流箭头翻转参考方向</span></div>
+      </div>
+
+      <div class="card" id="panel-kvl" style="display:none">
+        <h3>回路方程推演</h3>
+        <div class="poe-box" id="kvl-poe">
+          <div class="poe-title" id="kvl-poe-title">预测...</div>
+          <div id="kvl-poe-opts"></div>
+        </div>
+        <div class="eq-box" id="kvl-eq"></div>
+        <div id="kvl-feedback" class="poe-feedback"></div>
+        <div style="display:flex; gap:12px; margin-top:20px;">
+          <button class="btn" id="btn-cw" style="background:rgba(34,211,238,.15); border-color:var(--cyan);">顺时针绕行</button>
+          <button class="btn" id="btn-ccw">逆时针绕行</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>生成学情凭证</h3>
+        <div class="kv"><span>预测失误次数</span><span id="m-poe-error" style="color:var(--pink)">0 次</span></div>
+        <div class="kv"><span>KCL 翻转次数</span><span id="m-kcl-flip" style="color:var(--amber)">0 次</span></div>
+        <div class="kv"><span>KVL 绕行切换</span><span id="m-kvl-switch" style="color:var(--cyan)">0 次</span></div>
+        
+        <div style="margin-top:20px; display:flex; gap:12px;">
+          <button class="btn" id="btn-build" disabled>生成过关凭证</button>
+          <button class="btn" id="btn-copy" disabled>一键复制</button>
+        </div>
+        <textarea id="report-text" rows="8" placeholder="满足条件后，生成凭证并复制回学习通"></textarea>
+        <div class="warn-text" id="warn-box"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const cv = document.getElementById('cv-kirchhoff');
+const ctx = cv.getContext('2d');
+let W = 0, H = 0;
+
+function resize(){
+  const dpr = window.devicePixelRatio || 1;
+  const r = cv.getBoundingClientRect();
+  cv.width = r.width * dpr;
+  cv.height = r.height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  W = r.width; H = r.height;
+}
+window.addEventListener('resize', resize);
+resize();
+
+const state = {
+  mode: 'kcl',
+  kclDirs: [1, 1, -1], 
+  kclFlips: 0,
+  kvlDir: 1, 
+  kvlSwitches: 0,
+  poeError: 0,
+  pendingAction: null
+};
+
+// ================== 绘图辅助 ==================
+function drawLine(x1, y1, x2, y2, color = '#334155', width = 2) {
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+    ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineCap = 'round'; ctx.stroke();
+}
+function drawArrowHead(x, y, angle, color, size = 10) {
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x - size * Math.cos(angle - Math.PI/6), y - size * Math.sin(angle - Math.PI/6));
+    ctx.lineTo(x - size * Math.cos(angle + Math.PI/6), y - size * Math.sin(angle + Math.PI/6));
+    ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+}
+function drawCircle(x, y, r, color, fill = false) {
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+    if (fill) { ctx.fillStyle = color; ctx.fill(); } 
+    else { ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke(); }
+}
+function drawResistor(x, y, w, h, name, color = '#eab308') {
+    ctx.fillStyle = '#f8fafc'; ctx.strokeStyle = color; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.roundRect(x - w / 2, y - h / 2, w, h, 8); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#1e293b'; ctx.font = 'bold 22px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(name, x, y);
+}
+function drawSource(x, y) {
+    const c = '#ec4899';
+    drawLine(x - 25, y - 12, x + 25, y - 12, c, 6);
+    drawLine(x - 12, y + 12, x + 12, y + 12, c, 6);
+    ctx.fillStyle = c; ctx.font = 'bold 22px monospace';
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ctx.fillText('12V', x - 35, y + 5);
+}
+
+// ================== KCL 绘图 ==================
+function drawKCL() {
+    const cx = W / 2, cy = H / 2;
+    drawCircle(cx, cy, 12, '#0f172a', true);
+    
+    const angles = [Math.PI * 0.85, Math.PI * 1.85, Math.PI * 0.5]; 
+    const actualVals = [3, 2, 5];
+
+    angles.forEach((angle, i) => {
+        const len = Math.min(W, H) * 0.38; 
+        const ex = cx + len * Math.cos(angle);
+        const ey = cy + len * Math.sin(angle);
+        drawLine(cx, cy, ex, ey, '#64748b', 5);
+        
+        const dir = state.kclDirs[i];
+        const color = dir === 1 ? '#22d3ee' : '#f472b6';
+        
+        const ax = cx + (len * 0.65) * Math.cos(angle);
+        const ay = cy + (len * 0.65) * Math.sin(angle);
+        const arrowAngle = dir === 1 ? (angle + Math.PI) : angle;
+        
+        drawLine(ax - 30 * Math.cos(arrowAngle), ay - 30 * Math.sin(arrowAngle), 
+                 ax + 30 * Math.cos(arrowAngle), ay + 30 * Math.sin(arrowAngle), color, 5);
+        drawArrowHead(ax + 30 * Math.cos(arrowAngle), ay + 30 * Math.sin(arrowAngle), arrowAngle, color, 16);
+
+        const actualSigns = [1, 1, -1]; 
+        const displayVal = actualVals[i] * actualSigns[i] * dir; 
+
+        ctx.fillStyle = '#0f172a'; ctx.font = 'bold 24px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(`I${i+1} = ${displayVal}A`, cx + (len + 50) * Math.cos(angle), cy + (len + 50) * Math.sin(angle));
+    });
+
+    const dirs = state.kclDirs;
+    const actualSigns = [1, 1, -1];
+    let eqVars = [], valsStrParts = [];
+    
+    for(let i=0; i<3; i++) {
+        const sign = dirs[i] === 1 ? '+' : '-';
+        eqVars.push(`${sign}I${i+1}`);
+        const v = actualVals[i] * actualSigns[i] * dirs[i];
+        const vStr = v < 0 ? `<span class="val-neg">(${v})</span>` : `<span class="val-pos">${v}</span>`;
+        
+        if (i === 0) valsStrParts.push(sign === '+' ? vStr : `-${vStr}`);
+        else valsStrParts.push(` ${sign} ${vStr}`);
+    }
+
+    let varsStr = eqVars.join(' ');
+    if (varsStr.startsWith('+')) varsStr = varsStr.substring(1);
+    varsStr += ' = 0';
+
+    document.getElementById('kcl-eq').innerHTML = `
+        <div style="margin-bottom:12px; font-size:16px; color:var(--muted)">规定：流入节点为正 (+)，流出节点为负 (-)</div>
+        <b>变量方程:</b> ${varsStr}<br><br>
+        <b>代入代数值:</b> ${valsStrParts.join('')} = 0
+        <br><br>
+        <span style="font-size:16px; color:var(--green); font-weight:bold;">💡 无论怎么翻转参考方向，物理读数总和恒为 0。</span>
+    `;
+}
+
+// ================== KVL 绘图 ==================
+function drawKVL() {
+    const cx = W / 2, cy = H / 2;
+    const w = Math.min(W * 0.65, 480), h = Math.min(H * 0.55, 300);
+    const L = cx - w/2, R = cx + w/2, T = cy - h/2, B = cy + h/2;
+
+    drawLine(L, T, R, T, '#64748b', 5); 
+    drawLine(R, T, R, B, '#64748b', 5); 
+    drawLine(R, B, L, B, '#64748b', 5); 
+    drawLine(L, B, L, T, '#64748b', 5); 
+
+    drawResistor(cx, T, 100, 38, 'R1 = 2Ω');
+    drawResistor(R, cy, 38, 100, 'R2 = 3Ω');
+    drawSource(L, cy);
+
+    const iColor = '#3b82f6';
+    const aSize = 14;
+    drawLine(cx - 80, T, cx - 40, T, iColor, 4); drawArrowHead(cx - 40, T, 0, iColor, aSize);
+    drawLine(R, cy - 80, R, cy - 40, iColor, 4); drawArrowHead(R, cy - 40, Math.PI/2, iColor, aSize);
+    drawLine(cx + 80, B, cx + 40, B, iColor, 4); drawArrowHead(cx + 40, B, Math.PI, iColor, aSize);
+    drawLine(L, cy + 80, L, cy + 40, iColor, 4); drawArrowHead(L, cy + 40, -Math.PI/2, iColor, aSize);
+
+    ctx.fillStyle = iColor; ctx.font = 'bold 22px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(`实际电流 I = 2.4A`, cx, B + 55);
+
+    const dir = state.kvlDir;
+    const color = dir === 1 ? '#22d3ee' : '#a78bfa';
+    ctx.beginPath();
+    if (dir === 1) ctx.arc(cx, cy, 80, -Math.PI/2, Math.PI/2, false);
+    else ctx.arc(cx, cy, 80, -Math.PI/2, Math.PI/2, true);
+    ctx.strokeStyle = color; ctx.lineWidth = 5; ctx.stroke();
+    if (dir === 1) drawArrowHead(cx, cy + 80, 0, color, 20);
+    else drawArrowHead(cx, cy + 80, Math.PI, color, 20);
+    
+    ctx.fillStyle = color; ctx.font = 'bold 24px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(dir === 1 ? '绕行: 顺时针' : '绕行: 逆时针', cx, cy - 110);
+
+    let eqHTML = '';
+    if (dir === 1) {
+        eqHTML = `
+            <div style="margin-bottom:12px; font-size:16px; color:var(--muted)">规定：沿绕行方向，电位下降取正 (+)，电位上升取负 (-)</div>
+            <b>顺时针绕行：</b><br>
+            • 沿左边向上，经过 Us(-到+)，电位升，记 <span class="val-neg">-12</span><br>
+            • 沿上边向右，经过 R1(顺电流)，电位降，记 <span class="val-pos">+2.4×2 = +4.8</span><br>
+            • 沿右边向下，经过 R2(顺电流)，电位降，记 <span class="val-pos">+2.4×3 = +7.2</span><br><br>
+            <b>KVL方程:</b> -12 + 4.8 + 7.2 = 0
+            <br><br><span style="font-size:16px; color:var(--green); font-weight:bold;">💡 沿此方向，升压与降压平衡。</span>
+        `;
+    } else {
+        eqHTML = `
+            <div style="margin-bottom:12px; font-size:16px; color:var(--muted)">规定：沿绕行方向，电位下降取正 (+)，电位上升取负 (-)</div>
+            <b>逆时针绕行：</b><br>
+            • 沿左边向下，经过 Us(+到-)，电位降，记 <span class="val-pos">+12</span><br>
+            • 沿下边向右，经过 R2(逆电流)，电位升，记 <span class="val-neg">-2.4×3 = -7.2</span><br>
+            • 沿右边向上，经过 R1(逆电流)，电位升，记 <span class="val-neg">-2.4×2 = -4.8</span><br><br>
+            <b>KVL方程:</b> 12 - 7.2 - 4.8 = 0
+            <br><br><span style="font-size:16px; color:var(--green); font-weight:bold;">💡 沿此方向，降压与升压平衡。</span>
+        `;
+    }
+    document.getElementById('kvl-eq').innerHTML = eqHTML;
+}
+
+function draw() {
+    ctx.clearRect(0, 0, W, H);
+    if (state.mode === 'kcl') drawKCL();
+    else drawKVL();
+    updateUI();
+}
+
+// ================== 交互与 POE ==================
+cv.addEventListener('click', e => {
+    if (state.pendingAction) return;
+    const rect = cv.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = W / 2, cy = H / 2;
+
+    if (state.mode === 'kcl') {
+        const angle = Math.atan2(y - cy, x - cx);
+        const angles = [Math.PI * 0.85, Math.PI * 1.85, Math.PI * 0.5];
+        let minDiff = Infinity, idx = -1;
+        angles.forEach((a, i) => {
+            let diff = Math.abs(angle - a);
+            if (diff > Math.PI) diff = 2 * Math.PI - diff;
+            if (diff < minDiff) { minDiff = diff; idx = i; }
+        });
+        if (Math.hypot(x - cx, y - cy) > 20 && minDiff < 0.5) {
+            triggerKCLPOE(idx);
+        }
+    }
+});
+
+function triggerKCLPOE(idx) {
+    state.pendingAction = { type: 'kcl', idx };
+    
+    document.getElementById('kcl-eq').style.display = 'none';
+    document.getElementById('kcl-feedback').className = 'poe-feedback';
+    const poeBox = document.getElementById('kcl-poe');
+    poeBox.classList.add('active');
+    
+    document.getElementById('kcl-poe-title').innerHTML = `你正准备翻转 <b>I${idx+1}</b> 的参考方向。<br><br>预测：翻转后，在方程中它前面的符号会发生反转吗？`;
+    document.getElementById('kcl-poe-opts').innerHTML = `
+        <button class="poe-opt" data-val="flip">会反转（从流入变流出，或从流出变流入）</button>
+        <button class="poe-opt" data-val="same">保持不变</button>
+    `;
+}
+
+function triggerKVLPOE(newDir) {
+    state.pendingAction = { type: 'kvl', newDir };
+    
+    document.getElementById('kvl-eq').style.display = 'none';
+    document.getElementById('kvl-feedback').className = 'poe-feedback';
+    const poeBox = document.getElementById('kvl-poe');
+    poeBox.classList.add('active');
+    
+    const qText = newDir === -1 
+        ? `你正准备切换为 <b>逆时针</b> 绕行。<br><br><span style="font-size:16px;color:#e8eefc">预测：逆时针经过左侧电源 Us 时，是“从 + 到 -”还是“从 - 到 +”？在 KVL 中应当记为 <b>+12V</b> 还是 <b>-12V</b>？</span>`
+        : `你正准备切换为 <b>顺时针</b> 绕行。<br><br><span style="font-size:16px;color:#e8eefc">预测：顺时针经过左侧电源 Us 时，是“从 - 到 +”还是“从 + 到 -”？在 KVL 中应当记为 <b>+12V</b> 还是 <b>-12V</b>？</span>`;
+        
+    document.getElementById('kvl-poe-title').innerHTML = qText;
+    
+    const correctVal = newDir === -1 ? 'pos' : 'neg';
+    document.getElementById('kvl-poe-opts').innerHTML = `
+        <button class="poe-opt" data-val="${correctVal}">记为 ${newDir === -1 ? '+12V' : '-12V'}（电位降为正）</button>
+        <button class="poe-opt" data-val="${correctVal === 'pos' ? 'neg' : 'pos'}">记为 ${newDir === -1 ? '-12V' : '+12V'}（电位升为正）</button>
+    `;
+}
+
+document.getElementById('kcl-poe-opts').addEventListener('click', e => {
+    const btn = e.target.closest('.poe-opt');
+    if (!btn) return;
+    executePendingAction(btn.dataset.val === 'flip');
+});
+document.getElementById('kvl-poe-opts').addEventListener('click', e => {
+    const btn = e.target.closest('.poe-opt');
+    if (!btn) return;
+    const correct = state.pendingAction.newDir === -1 ? 'pos' : 'neg';
+    executePendingAction(btn.dataset.val === correct);
+});
+
+function executePendingAction(isCorrectPrediction) {
+    if (!state.pendingAction) return;
+    const { type, idx, newDir } = state.pendingAction;
+    const feedbackId = type === 'kcl' ? 'kcl-feedback' : 'kvl-feedback';
+    const fbEl = document.getElementById(feedbackId);
+
+    if (isCorrectPrediction) {
+        fbEl.className = 'poe-feedback success';
+        fbEl.innerHTML = '✅ <b>预测正确！</b> 你的物理直觉很敏锐。请看右侧方程。';
+    } else {
+        state.poeError++;
+        fbEl.className = 'poe-feedback error';
+        if (type === 'kcl') {
+            fbEl.innerHTML = `❌ <b>预测失误！</b> 参考方向翻转，方程里的正负号当然会变。请看代入后的数值。`;
+        } else {
+            fbEl.innerHTML = `❌ <b>预测失误！</b> 记住口诀：<b>沿绕行方向，先遇到“-”后遇到“+”是升压（记负），先遇到“+”后遇到“-”是降压（记正）。</b> 请观察推导。`;
+        }
+    }
+
+    if (type === 'kcl') {
+        state.kclDirs[idx] *= -1;
+        state.kclFlips++;
+        document.getElementById('kcl-poe').classList.remove('active');
+        document.getElementById('kcl-eq').style.display = 'block';
+    } else if (type === 'kvl') {
+        state.kvlDir = newDir;
+        state.kvlSwitches++;
+        document.getElementById('btn-cw').style.background = newDir === 1 ? 'rgba(34,211,238,.15)' : 'rgba(255,255,255,.04)';
+        document.getElementById('btn-cw').style.borderColor = newDir === 1 ? 'var(--cyan)' : 'var(--line)';
+        document.getElementById('btn-ccw').style.background = newDir === -1 ? 'rgba(167,139,250,.15)' : 'rgba(255,255,255,.04)';
+        document.getElementById('btn-ccw').style.borderColor = newDir === -1 ? 'var(--violet)' : 'var(--line)';
+        
+        document.getElementById('kvl-poe').classList.remove('active');
+        document.getElementById('kvl-eq').style.display = 'block';
+    }
+    state.pendingAction = null;
+    draw();
+    checkUnlock();
+}
+
+function switchTab(mode) {
+    if (state.pendingAction) return;
+    state.mode = mode;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    
+    document.getElementById('kcl-poe').classList.remove('active');
+    document.getElementById('kvl-poe').classList.remove('active');
+    document.getElementById('kcl-eq').style.display = 'block';
+    document.getElementById('kvl-eq').style.display = 'block';
+    document.getElementById('kcl-feedback').className = 'poe-feedback';
+    document.getElementById('kvl-feedback').className = 'poe-feedback';
+
+    if (mode === 'kcl') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('panel-kcl').style.display = 'block';
+        document.getElementById('panel-kvl').style.display = 'none';
+    } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('panel-kcl').style.display = 'none';
+        document.getElementById('panel-kvl').style.display = 'block';
+    }
+    draw();
+}
+
+document.getElementById('btn-cw').addEventListener('click', () => {
+    if (state.kvlDir === 1 || state.pendingAction) return;
+    triggerKVLPOE(1);
+});
+document.getElementById('btn-ccw').addEventListener('click', () => {
+    if (state.kvlDir === -1 || state.pendingAction) return;
+    triggerKVLPOE(-1);
+});
+
+// ================== 报告与解锁 ==================
+function checkUnlock() {
+    if (state.kclFlips > 0 && state.kvlSwitches > 0) {
+        document.getElementById('btn-build').disabled = false;
+    }
+    updateUI();
+}
+
+function updateUI() {
+    document.getElementById('m-poe-error').textContent = state.poeError + ' 次';
+    document.getElementById('m-kcl-flip').textContent = state.kclFlips + ' 次';
+    document.getElementById('m-kvl-switch').textContent = state.kvlSwitches + ' 次';
+}
+
+document.getElementById('btn-build').addEventListener('click', () => {
+    const warnBox = document.getElementById('warn-box');
+    const ta = document.getElementById('report-text');
+    warnBox.classList.remove('show');
+
+    // 生成一个简单的校验码防作弊
+    const hashStr = `KCL${state.kclFlips}-KVL${state.kvlSwitches}-ERR${state.poeError}`;
+
+    const text = `【基尔霍夫定律 · 网页探究通关凭证】
+- 完成时间：${new Date().toLocaleString('zh-CN')}
+- 通关验证码：${hashStr}
+- 交互数据：
+  1. KCL 节点方程推演：翻转了 ${state.kclFlips} 次参考方向。
+  2. KVL 回路方程推演：切换了 ${state.kvlSwitches} 次绕行方向。
+  3. POE 预测失误：共 ${state.poeError} 次。
+（请将本凭证复制粘贴到学习通的作答区，随后开始随堂测验）`;
+    ta.value = text;
+    ta.classList.add('show');
+    document.getElementById('btn-copy').disabled = false;
+});
+
+document.getElementById('btn-copy').addEventListener('click', async () => {
+    const ta = document.getElementById('report-text');
+    const warnBox = document.getElementById('warn-box');
+    if (!ta.value) return;
+    try {
+        await navigator.clipboard.writeText(ta.value);
+        warnBox.innerHTML = '✅ 已复制，去学习通提交并做题吧！';
+        warnBox.classList.add('show');
+        warnBox.style.color = 'var(--green)';
+        warnBox.style.background = 'rgba(52,211,153,.1)';
+        warnBox.style.borderColor = 'rgba(52,211,153,.3)';
+        setTimeout(() => {
+            warnBox.classList.remove('show');
+            warnBox.style.color = '';
+            warnBox.style.background = '';
+            warnBox.style.borderColor = '';
+        }, 3000);
+    } catch {
+        ta.select();
+        document.execCommand('copy');
+    }
+});
+
+draw();
+updateUI();
+</script>
+</body>
+</html>
