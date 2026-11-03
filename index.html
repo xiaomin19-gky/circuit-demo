@@ -21,7 +21,7 @@
         .card .title { font-size: 20px; font-weight: bold; color: #2c3e50; margin-bottom: 8px; }
         .card .desc { font-size: 15px; color: #7f8c8d; line-height: 1.5; }
         
-        /* 特殊卡片样式（BMS硬件在环） */
+        /* 特殊卡片样式（BMS硬件） */
         .card-hw { border: 2px solid #e74c3c; background-color: #fff8f8; }
         .card-hw .title { color: #e74c3c; }
         .card-hw .desc { color: #e74c3c; font-weight: 500; }
@@ -37,9 +37,16 @@
         <!-- 第一阶 -->
         <div class="tier-section">
             <div class="tier-title">第一阶：拓扑与方程（纯网页交互） <span>手机/电脑均可</span></div>
+           <div class="tier-section">
+            <div class="tier-title">第一阶：拓扑与方程（纯网页交互）<span>手机/电脑均可</span></div>
             <div class="grid">
+                <!-- 新增：基尔霍夫定律 -->
+                <a class="card" kcl-kvl.html">
+                    <div class="title">基尔霍夫定律（KCL/KVL 符号映射）</div>
+                    <div class="desc">先预测再观察，点击翻转箭头与切换绕行方向，洞悉方程符号随物理方向的变化规律</div>
+                </a> <div class="grid">
                 <!-- 参考方向与符号法则 -->
-                <a class="card" href="reference-direction.html">
+                <a class="card" href="ref-direction.html">
                     <div class="title">参考方向与符号法则（POE探究）</div>
                     <div class="desc">翻转物理实际与参考方向，通过6步闯关，洞悉负号背后的数学与物理意义</div>
                 </a>
