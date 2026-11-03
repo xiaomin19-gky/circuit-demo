@@ -21,7 +21,7 @@
         .card .title { font-size: 20px; font-weight: bold; color: #2c3e50; margin-bottom: 8px; }
         .card .desc { font-size: 15px; color: #7f8c8d; line-height: 1.5; }
         
-        /* 特殊卡片样式（BMS硬件） */
+        /* 特殊卡片样式（BMS硬件在环） */
         .card-hw { border: 2px solid #e74c3c; background-color: #fff8f8; }
         .card-hw .title { color: #e74c3c; }
         .card-hw .desc { color: #e74c3c; font-weight: 500; }
@@ -36,14 +36,14 @@
 
         <!-- 第一阶 -->
         <div class="tier-section">
-            <div class="tier-title">第一阶：拓扑与方程（纯网页交互） <span>手机/电脑均可</span></div>
-           <div class="tier-section">
+            <div class="tier-title">第一阶：拓扑与方程（纯网页交互）<span>手机/电脑均可</span></div>
             <div class="grid">
                 <!-- 新增：基尔霍夫定律 -->
-                <a class="card" kcl-kvl.html">
+                <a class="card" href="kcl-kvl.html">
                     <div class="title">基尔霍夫定律（KCL/KVL 符号映射）</div>
                     <div class="desc">先预测再观察，点击翻转箭头与切换绕行方向，洞悉方程符号随物理方向的变化规律</div>
-                </a> <div class="grid">
+                </a>
+
                 <!-- 参考方向与符号法则 -->
                 <a class="card" href="ref-direction.html">
                     <div class="title">参考方向与符号法则（POE探究）</div>
@@ -61,7 +61,6 @@
                     <div class="title">节点电压法（矩阵重组防作弊）</div>
                     <div class="desc">拖动滑块看矩阵重组，强制POE预测，探究电流源串电阻的特殊支路</div>
                 </a>
-                <!-- 如果有其他第一阶的卡片，继续加在这里 -->
             </div>
         </div>
 
@@ -73,7 +72,6 @@
                     <div class="title">🔋 BMS电池内阻与最大功率（硬件在环）</div>
                     <div class="desc">连接真实电池与传感器，测出带毛刺的真实抛物线，探究旧电池为何加速无力</div>
                 </a>
-                <!-- 原有的RC充电电路卡片也放在这里 -->
                 <a class="card" href="rc-circuit.html">
                     <div class="title">RC 充电电路</div>
                     <div class="desc">观察电容电压、充电电流随时间的指数变化，以及时间常数τ的影响</div>
@@ -89,7 +87,6 @@
                     <div class="title">功率因数与无功补偿</div>
                     <div class="desc">拖动电容滑块，观察工厂电费罚款如何变成奖励</div>
                 </a>
-                <!-- 如果有其他第三阶的卡片，继续加在这里 -->
             </div>
         </div>
 
