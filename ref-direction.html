@@ -3,58 +3,70 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>参考方向与符号法则 · POE探究闯关</title>
+<title>参考方向与符号法则 · 探究闯关</title>
 <style>
 :root{
-  --bg:#0a0f1c; --panel:#121a2c; --line:#22304d; --text:#e8eefc;
-  --muted:#8ea0c6; --cyan:#22d3ee; --amber:#fbbf24; --green:#34d399;
-  --pink:#f472b6; --violet:#a78bfa; --gray:#4a6a9e;
+  --bg:#f4f7f6; --panel:#ffffff; --line:#e2e8f0; --text:#2c3e50;
+  --muted:#7f8c8d; --cyan:#0ea5e9; --amber:#f59e0b; --green:#10b981;
+  --pink:#ec4899; --violet:#8b5cf6; --gray:#94a3b8;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
-  background:radial-gradient(900px 500px at 50% -10%, #16294a 0%, transparent 60%), var(--bg);
-  color:var(--text); min-height:100vh; display:flex; justify-content:center; padding:28px 16px;
+  background:var(--bg);
+  color:var(--text); min-height:100vh; display:flex; justify-content:center; padding:30px 20px;
   -webkit-font-smoothing:antialiased;
 }
-.wrap{max-width:1150px; width:100%;}
-header{display:flex;align-items:center;gap:16px;margin-bottom:24px}
-.logo{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:26px;background:linear-gradient(135deg,#f472b6,#6366f1);box-shadow:0 8px 30px rgba(244,114,182,.3);}
-h1{font-size:22px;font-weight:700;letter-spacing:.5px}
-header p{color:var(--muted);font-size:13px;margin-top:4px}
+.wrap{max-width:1400px; width:100%;}
+header{display:flex; align-items:center; gap:20px; margin-bottom:24px;}
+.logo{width:64px;height:64px;border-radius:16px;display:grid;place-items:center;font-size:32px;background:linear-gradient(135deg,#0ea5e9,#6366f1);box-shadow:0 8px 30px rgba(14,165,233,.3); color:#fff;}
+h1{font-size:30px;font-weight:700;letter-spacing:.5px}
+header p{color:var(--muted);font-size:16px;margin-top:6px}
 
-.lab{display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:start}
-@media(max-width:900px){.lab{grid-template-columns:1fr}}
+.lab{display:grid;grid-template-columns:1fr 520px;gap:24px;align-items:start}
+@media(max-width:1100px){.lab{grid-template-columns:1fr}}
 
 .stage{
-  background:linear-gradient(180deg,#0e1626,#0b1120); border:1px solid var(--line);
-  border-radius:18px; padding:8px; overflow:hidden; box-shadow:0 20px 50px -20px rgba(0,0,0,.85);
+  background:#ffffff; border:1px solid var(--line);
+  border-radius:20px; padding:10px; overflow:hidden; box-shadow:0 10px 30px -10px rgba(0,0,0,.08);
+  position: sticky; /* 关键：启用粘性定位 */
+  top: 24px; /* 距离屏幕顶部 24px 停住 */
 }
-canvas{display:block;width:100%;height:420px;border-radius:12px;cursor:pointer;}
+@media(max-width:1100px){
+  .stage { position: relative; top: 0; } /* 手机端取消粘性，直接平铺 */
+}
+
+canvas{display:block;width:100%;height:520px;border-radius:12px;cursor:pointer;}
 
 .card{
-  background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.008));
-  border:1px solid var(--line); border-radius:16px; padding:18px; margin-bottom:16px;
+  background:#ffffff; border:1px solid var(--line);
+  border-radius:20px; padding:24px; margin-bottom:20px;
+  box-shadow:0 10px 30px -10px rgba(0,0,0,.05);
 }
-.card h3{font-size:14px;color:var(--cyan);margin-bottom:12px;border-bottom:1px solid rgba(34,211,238,.2);padding-bottom:8px; display:flex; justify-content:space-between;}
+.card h3{font-size:22px;color:var(--cyan);margin-bottom:20px;border-bottom:2px solid rgba(14,165,233,.15);padding-bottom:14px; display:flex; justify-content:space-between; font-weight:700;}
 
-/* 闯关问答区 */
+/* 右侧状态数据 */
+.kv{display:flex;justify-content:space-between;font-size:18px;padding:14px 0;border-bottom:1px dashed #e2e8f0; align-items: center;}
+.kv:last-child{border-bottom:none;}
+.kv span:first-child{color:var(--muted); font-weight:600;}
+.kv span:last-child{font-weight:700; font-size: 20px;}
+
+/* 选项区 */
 .step{
-  background:rgba(11,17,32,.6); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:12px;
-  opacity:0.4; pointer-events:none; transition:all .4s ease;
+  background:#f8fafc; border:2px solid var(--line); border-radius:16px; padding:20px; margin-bottom:16px;
+  opacity:0.5; pointer-events:none; transition:all .3s ease;
 }
-.step.active{opacity:1; pointer-events:auto; border-color:rgba(34,211,238,.5); box-shadow:0 0 15px rgba(34,211,238,.1);}
-.step.done{opacity:1; border-color:var(--green); background:rgba(52,211,153,.05);}
-.step-title{font-size:13px; font-weight:600; margin-bottom:10px; color:var(--text); line-height: 1.5;}
-.poe-tag { background: rgba(251,191,36,.2); color: var(--amber); font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-weight: bold; }
-.opts{display:flex; gap:8px;}
+.step.active{opacity:1; pointer-events:auto; border-color:rgba(14,165,233,.4); box-shadow:0 0 20px rgba(14,165,233,.1); background:#fff;}
+.step.done{opacity:1; border-color:var(--green); background:rgba(16,185,129,.05);}
+.step-title{font-size:18px; font-weight:700; margin-bottom:16px; color:var(--text); line-height: 1.6;}
+.opts{display:flex; gap:14px;}
 .opt-btn{
-  flex:1; border:1px solid var(--line); background:rgba(255,255,255,.03); color:var(--text);
-  padding:10px; border-radius:8px; font-size:13px; cursor:pointer; transition:.2s; font-family:inherit;
+  flex:1; border:2px solid var(--line); background:#fff; color:var(--text);
+  padding:14px; border-radius:12px; font-size:20px; font-weight:bold; cursor:pointer; transition:.2s; font-family:inherit;
 }
-.opt-btn:hover{background:rgba(255,255,255,.08);}
-.opt-btn.correct{background:rgba(52,211,153,.2); border-color:var(--green); color:var(--green);}
-.opt-btn.wrong{background:rgba(244,114,182,.2); border-color:var(--pink); color:var(--pink); animation:shake .4s;}
+.opt-btn:hover{background:#f1f5f9; border-color:#cbd5e1;}
+.opt-btn.correct{background:rgba(16,185,129,.15); border-color:var(--green); color:var(--green);}
+.opt-btn.wrong{background:rgba(236,72,153,.15); border-color:var(--pink); color:var(--pink); animation:shake .4s;}
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
@@ -64,44 +76,40 @@ canvas{display:block;width:100%;height:420px;border-radius:12px;cursor:pointer;}
 
 /* 错误提示文字 */
 .feedback {
-  font-size: 12.5px; color: #fff; background: rgba(244,114,182,.15); 
-  border-left: 3px solid var(--pink); padding: 8px 12px; border-radius: 4px;
-  margin-top: 10px; display: none; line-height: 1.5;
+  font-size: 16px; color: #fff; background: var(--pink); 
+  border-radius: 10px; padding: 12px 16px; margin-top: 14px; display: none; line-height: 1.6; font-weight: 500;
 }
 .feedback.show { display: block; animation: fadeIn .3s; }
 @keyframes fadeIn { from{opacity:0; transform:translateY(-5px)} to{opacity:1; transform:none} }
 
 /* 最终公式映射 */
 .eq-box{
-  background:#0b1120; border:1px dashed var(--amber); border-radius:12px; padding:16px;
-  font-family:ui-monospace,Consolas,monospace; font-size:14px; line-height:1.8; display:none;
+  background:#f8fafc; border:2px dashed var(--amber); border-radius:16px; padding:24px;
+  font-family:ui-monospace,Consolas,monospace; font-size:18px; line-height:2.2; display:none; margin-top: 16px;
 }
 .eq-box.show{display:block; animation:fade .5s ease;}
 @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.val-pos{ color:var(--cyan); font-weight:bold;}
-.val-neg{ color:var(--pink); font-weight:bold;}
+.val-pos{ color:var(--cyan); font-weight:bold; font-size: 20px;}
+.val-neg{ color:var(--pink); font-weight:bold; font-size: 20px;}
 
-.kv{display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px dashed rgba(90,130,200,.18);}
-.kv span:first-child{color:var(--muted);}
-.kv span:last-child{font-weight:600;}
-
-/* 报告区 */
+/* 按钮与文本域 */
 .btn{
-  border:1px solid var(--line); background:rgba(255,255,255,.04); color:var(--text);
-  padding:9px 14px; border-radius:10px; cursor:pointer; font-size:13px; font-family:inherit; transition:.2s; width:100%;
+  border:2px solid var(--line); background:#fff; color:var(--text);
+  padding:16px 20px; border-radius:14px; cursor:pointer; font-size:18px; font-weight:bold; font-family:inherit; transition:.2s; width:100%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
 }
-.btn:hover{background:rgba(34,211,238,.12); border-color:rgba(34,211,238,.4);}
+.btn:hover{background:#f1f5f9; border-color:#cbd5e1;}
 textarea{
-  width:100%;margin-top:12px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;line-height:1.6;
-  background:#0b1120;color:#c8d6f0;border:1px solid #22304d;border-radius:10px;padding:10px;resize:vertical; display:none;
+  width:100%;margin-top:16px;font-family:ui-monospace,Consolas,monospace;font-size:15px;line-height:1.8;
+  background:#f8fafc;color:var(--text);border:2px solid var(--line);border-radius:12px;padding:16px;resize:vertical; display:none;
 }
 textarea.show{display:block;}
 
-/* 拦截警告样式 */
+/* 拦截警告框 */
 .warn-text {
-  color: var(--pink); font-size: 12.5px; font-weight: 600; margin-top: 8px; 
-  display: none; line-height: 1.5; text-align: center;
-  background: rgba(244,114,182,.1); padding: 8px; border-radius: 8px; border: 1px solid rgba(244,114,182,.3);
+  color: #fff; font-size: 16px; font-weight: 600; margin-top: 14px; 
+  display: none; line-height: 1.6; text-align: center;
+  background: var(--pink); padding: 16px; border-radius: 12px;
 }
 .warn-text.show { display: block; animation: shake .4s; }
 </style>
@@ -112,7 +120,7 @@ textarea.show{display:block;}
     <div class="logo">⚡</div>
     <div>
       <h1>拓扑与方程 · 参考方向与符号法则</h1>
-      <p>POE探究：先预测，再观察，后解释。点击画布翻转参考方向开始体验</p>
+      <p>观察实际方向与参考方向的区别，按顺序完成右侧的推理闯关</p>
     </div>
   </header>
 
@@ -125,9 +133,8 @@ textarea.show{display:block;}
       <div class="card">
         <h3>解题推演</h3>
         
-        <!-- Step 1 -->
         <div class="step active" id="step-1">
-          <div class="step-title">Step 1：已知实际电压为 10V (上正下负)。对比高亮参考电压，其代数值 U 是？<span class="poe-tag">POE 直觉预测</span></div>
+          <div class="step-title">Step 1：已知实际电压为 10V (上正下负)。对比高亮参考电压，其代数值 U 是？</div>
           <div class="opts">
             <button class="opt-btn" data-val="10">+10 V</button>
             <button class="opt-btn" data-val="-10">-10 V</button>
@@ -135,9 +142,8 @@ textarea.show{display:block;}
           <div class="feedback" id="fb-1"></div>
         </div>
 
-        <!-- Step 2 -->
         <div class="step" id="step-2">
-          <div class="step-title">Step 2：已知实际电流为 2A (从上到下)。对比高亮参考电流，其代数值 I 是？<span class="poe-tag">POE 直觉预测</span></div>
+          <div class="step-title">Step 2：已知实际电流为 2A (从上到下)。对比高亮参考电流，其代数值 I 是？</div>
           <div class="opts">
             <button class="opt-btn" data-val="2">+2 A</button>
             <button class="opt-btn" data-val="-2">-2 A</button>
@@ -145,7 +151,6 @@ textarea.show{display:block;}
           <div class="feedback" id="fb-2"></div>
         </div>
 
-        <!-- Step 3 -->
         <div class="step" id="step-3">
           <div class="step-title">Step 3：高亮的参考电压与参考电流，是关联还是非关联？</div>
           <div class="opts">
@@ -155,7 +160,6 @@ textarea.show{display:block;}
           <div class="feedback" id="fb-3"></div>
         </div>
 
-        <!-- Step 4 -->
         <div class="step" id="step-4">
           <div class="step-title">Step 4：在当前的【<span id="dir-text-4" style="color:var(--cyan)">关联</span>】参考方向下，公式 P = U × I 算出的是该元件的？</div>
           <div class="opts">
@@ -165,7 +169,6 @@ textarea.show{display:block;}
           <div class="feedback" id="fb-4"></div>
         </div>
 
-        <!-- Step 5 -->
         <div class="step" id="step-5">
           <div class="step-title">Step 5：现在代入数值计算。P = U × I 的代数结果等于？</div>
           <div class="opts">
@@ -175,7 +178,6 @@ textarea.show{display:block;}
           <div class="feedback" id="fb-5"></div>
         </div>
 
-        <!-- Step 6 -->
         <div class="step" id="step-6">
           <div class="step-title">Step 6：结合前两步（公式含义 + 代数结果），这只纯电阻实际处于什么状态？</div>
           <div class="opts">
@@ -188,19 +190,17 @@ textarea.show{display:block;}
         <div class="eq-box" id="eq-final"></div>
       </div>
 
-      <!-- 报告区 -->
       <div class="card">
-        <h3>学情数据与 AI 诊断</h3>
+        <h3>探究与学情记录</h3>
         <div class="kv"><span>翻转操作次数</span><span id="m-flip" style="color:var(--cyan)">0 次</span></div>
-        <div class="kv"><span>符号预测错误</span><span id="m-poe-error" style="color:var(--amber)">0 次</span></div>
-        <div class="kv"><span>推理总试错</span><span id="m-error" style="color:var(--pink)">0 次</span></div>
-        <div class="kv"><span>推理完成度</span><span id="m-progress" style="color:var(--green)">0 / 6</span></div>
+        <div class="kv"><span>推理完成度</span><span id="m-progress" style="color:var(--amber)">0 / 6</span></div>
+        <div class="kv"><span>试错次数</span><span id="m-error" style="color:var(--pink)">0 次</span></div>
         
-        <div style="margin-top:14px; display:flex; gap:8px;">
-          <button class="btn" id="btn-build">生成纯学情数据</button>
+        <div style="margin-top:20px; display:flex; gap:12px;">
+          <button class="btn" id="btn-build">生成本模块报告</button>
           <button class="btn" id="btn-copy">一键复制</button>
         </div>
-        <textarea id="report-text" rows="10" placeholder="点击上方按钮生成，复制后直接粘贴给学习通 AI"></textarea>
+        <textarea id="report-text" rows="10" placeholder="点击上方按钮生成，复制后直接粘贴给学习通"></textarea>
         <div class="warn-text" id="warn-box"></div>
       </div>
     </div>
@@ -232,88 +232,102 @@ const state = {
   currentStep: 1,
   flipCount: 0,
   errorCount: 0,
-  poePredictErrors: 0, // 记录在Step1和Step2的首次预测失误
-  hasCompletedNonAssoc: false // 标记是否在非关联状态下完成过推理
+  hasCompletedNonAssoc: false
 };
 
 function draw(){
   ctx.clearRect(0,0,W,H);
-  ctx.strokeStyle = 'rgba(90,130,200,.05)'; ctx.lineWidth = 1;
-  for(let x=0; x<W; x+=30){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
-  for(let y=0; y<H; y+=30){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  
+  // 极淡的网格背景
+  ctx.strokeStyle = 'rgba(0,0,0,0.03)'; ctx.lineWidth = 1;
+  for(let x=0; x<W; x+=40){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for(let y=0; y<H; y+=40){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
 
   const cx = W / 2, cy = H / 2;
-  const rw = 70, rh = 100;
+  const rw = 100, rh = 150; // 电阻显著放大
 
-  ctx.strokeStyle = '#4a6a9e'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+  // 主电路导线（垂直穿过中心）
+  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 6; ctx.lineCap = 'round';
   ctx.beginPath(); ctx.moveTo(cx, 40); ctx.lineTo(cx, cy - rh/2);
   ctx.moveTo(cx, cy + rh/2); ctx.lineTo(cx, H - 40); ctx.stroke();
 
-  ctx.fillStyle = '#1a2538'; ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.roundRect(cx - rw/2, cy - rh/2, rw, rh, 8); ctx.fill(); ctx.stroke();
-  ctx.fillStyle = '#fbbf24'; ctx.font = 'bold 18px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  // 中心电阻
+  ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.roundRect(cx - rw/2, cy - rh/2, rw, rh, 12); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#1e293b'; ctx.font = 'bold 28px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillText(state.R + 'Ω', cx, cy);
 
-  // 左侧：实际方向
+  // ================= 左侧：实际与参考电压 =================
+  // 1. 实际电压 (灰色，在最左侧)
+  const realUx = cx - 160;
   ctx.save();
-  ctx.globalAlpha = 0.35;
-  const rVx = cx - 140;
-  ctx.fillStyle = '#fff'; ctx.font = 'bold 14px sans-serif';
-  ctx.fillText('+', rVx, cy - rh/2 - 10);
-  ctx.fillText('−', rVx, cy + rh/2 + 10);
-  ctx.beginPath(); ctx.moveTo(rVx, cy - rh/2); ctx.lineTo(rVx, cy + rh/2);
-  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(rVx, cy + rh/2); ctx.lineTo(rVx - 5, cy + rh/2 - 10); ctx.lineTo(rVx + 5, cy + rh/2 - 10); ctx.fill();
-  ctx.fillStyle = '#fff'; ctx.fillText('实际 U = 10V', rVx, cy - rh/2 - 35);
-
-  const rIx = cx + 140;
-  ctx.beginPath(); ctx.moveTo(rIx, 80); ctx.lineTo(rIx, H - 80);
-  ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(rIx, H - 80); ctx.lineTo(rIx - 6, H - 92); ctx.lineTo(rIx + 6, H - 92); ctx.fill();
-  ctx.fillText('实际 I = 2A', rIx, 55);
+  ctx.globalAlpha = 0.4;
+  ctx.fillStyle = '#0f172a'; ctx.font = 'bold 24px sans-serif'; 
+  ctx.fillText('+', realUx, cy - rh/2 - 20);
+  ctx.fillText('−', realUx, cy + rh/2 + 20);
+  ctx.beginPath(); ctx.moveTo(realUx, cy - rh/2); ctx.lineTo(realUx, cy + rh/2);
+  ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 4; ctx.stroke();
+  // 箭头(向下)
+  ctx.beginPath(); ctx.moveTo(realUx, cy + rh/2); ctx.lineTo(realUx - 10, cy + rh/2 - 20); ctx.lineTo(realUx + 10, cy + rh/2 - 20); ctx.fill();
+  ctx.font = 'bold 22px sans-serif'; ctx.fillText('实际 U = 10V', realUx, cy - rh/2 - 60);
   ctx.restore();
 
-  // 中间：参考方向
-  const vx = cx - 70;
+  // 2. 参考电压 (青色)
+  const refUx = cx - 60;
   let plusY, minusY;
   if (state.refU === 1) { plusY = cy - rh/2 - 20; minusY = cy + rh/2 + 20; }
   else { plusY = cy + rh/2 + 20; minusY = cy - rh/2 - 20; }
 
-  ctx.fillStyle = '#22d3ee';
-  ctx.fillText('+', vx, plusY);
-  ctx.fillText('−', vx, minusY);
+  ctx.fillStyle = '#0ea5e9';
+  ctx.font = 'bold 24px sans-serif'; 
+  ctx.fillText('+', refUx, plusY);
+  ctx.fillText('−', refUx, minusY);
   
   let startY = plusY, endY = minusY;
-  const lineStartY = startY + (startY < endY ? 12 : -12);
-  const lineEndY = endY + (startY < endY ? -12 : 12);
+  const lineStartY = startY + (startY < endY ? 20 : -20);
+  const lineEndY = endY + (startY < endY ? -20 : 20);
   
-  ctx.beginPath(); ctx.moveTo(vx, lineStartY); ctx.lineTo(vx, lineEndY);
-  ctx.strokeStyle = '#22d3ee'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(refUx, lineStartY); ctx.lineTo(refUx, lineEndY);
+  ctx.strokeStyle = '#0ea5e9'; ctx.lineWidth = 5; ctx.stroke();
   
   let triangleDir = startY < endY ? 1 : -1; 
   ctx.beginPath();
-  ctx.moveTo(vx, lineEndY);
-  ctx.lineTo(vx - 5, lineEndY - triangleDir * 10);
-  ctx.lineTo(vx + 5, lineEndY - triangleDir * 10);
-  ctx.fill();
-  ctx.fillText('参考 U', vx - 30, cy);
+  ctx.moveTo(refUx, lineEndY);
+  ctx.lineTo(refUx - 10, lineEndY - triangleDir * 18);
+  ctx.lineTo(refUx + 10, lineEndY - triangleDir * 18);
+  ctx.fillStyle = '#0ea5e9'; ctx.fill();
+  ctx.fillText('参考 U', refUx - 50, cy);
 
-  const ix = cx + 70;
+  // ================= 右侧：参考与实际电流 =================
+  // 3. 参考电流 (粉色)
+  const refIx = cx + 60;
   let iStartY, iEndY;
-  if (state.refI === 1) { iStartY = 60; iEndY = H - 60; } else { iStartY = H - 60; iEndY = 60; }
+  if (state.refI === 1) { iStartY = 80; iEndY = H - 80; }
+  else { iStartY = H - 80; iEndY = 80; }
 
-  ctx.beginPath(); ctx.moveTo(ix, iStartY); ctx.lineTo(ix, iEndY);
-  ctx.strokeStyle = '#f472b6'; ctx.lineWidth = 3; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(refIx, iStartY); ctx.lineTo(refIx, iEndY);
+  ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 5; ctx.stroke();
   
   let iDir = iStartY < iEndY ? 1 : -1;
   ctx.beginPath();
-  ctx.moveTo(ix, iEndY);
-  ctx.lineTo(ix - 6, iEndY - iDir * 12);
-  ctx.lineTo(ix + 6, iEndY - iDir * 12);
-  ctx.fillStyle = '#f472b6'; ctx.fill();
-  ctx.fillText('参考 I', ix + 30, cy);
+  ctx.moveTo(refIx, iEndY);
+  ctx.lineTo(refIx - 12, iEndY - iDir * 22);
+  ctx.lineTo(refIx + 12, iEndY - iDir * 22);
+  ctx.fillStyle = '#ec4899'; ctx.fill();
+  ctx.fillText('参考 I', refIx + 55, cy);
 
-  ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.font = '13px sans-serif';
+  // 4. 实际电流 (灰色，在最右侧)
+  const realIx = cx + 160;
+  ctx.save();
+  ctx.globalAlpha = 0.4;
+  ctx.beginPath(); ctx.moveTo(realIx, 100); ctx.lineTo(realIx, H - 100);
+  ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 4; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(realIx, H - 100); ctx.lineTo(realIx - 10, H - 120); ctx.lineTo(realIx + 10, H - 120); ctx.fill();
+  ctx.font = 'bold 22px sans-serif'; ctx.fillText('实际 I = 2A', realIx, 70);
+  ctx.restore();
+
+  // 顶部提示
+  ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.font = '18px sans-serif';
   ctx.fillText('👆 点击高亮的 U 或 I 区域翻转参考方向', cx, 25);
 }
 
@@ -387,33 +401,20 @@ function handleAnswer(e, stepId) {
     updateUI();
   } else {
     state.errorCount++;
-    // 只有在前两步首次预测错误时，记录POE失误
-    if (stepId <= 2 && !document.getElementById('step-' + stepId).classList.contains('done')) {
-      state.poePredictErrors++;
-    }
-    
     btn.classList.add('wrong');
     setTimeout(() => btn.classList.remove('wrong'), 800);
     
     let errMsg = "";
-    if (stepId === 1) {
-        errMsg = (state.refU === 1) 
-          ? "💡 <b>POE 预测失败：</b>参考电压 '+' 在上方，应取正。" 
-          : "💡 <b>POE 预测失败：</b>参考电压 '+' 在下方，方向相反，应带负号。";
-    }
-    else if (stepId === 2) {
-        errMsg = (state.refI === 1) 
-          ? "💡 <b>POE 预测失败：</b>参考电流箭头向下，应取正。" 
-          : "💡 <b>POE 预测失败：</b>参考电流箭头向上，方向相反，应带负号。";
-    }
+    if (stepId === 1) errMsg = state.refU === 1 ? "💡 提示：参考电压 '+' 在上方，取正。" : "💡 提示：参考电压 '+' 在下方，与实际方向相反，应带负号。";
+    else if (stepId === 2) errMsg = state.refI === 1 ? "💡 提示：参考电流向下，取正。" : "💡 提示：参考电流向上，与实际方向相反，应带负号。";
     else if (stepId === 3) errMsg = "💡 提示：电流从 '+' 流入为关联，从 '-' 流入为非关联。";
     else if (stepId === 4) {
         errMsg = expected.isAssoc 
-            ? "💡 提示：在【关联】参考方向下，公式 P=UI 算出的就是【吸收】的功率。" 
-            : "💡 提示：在【非关联】参考方向下，公式 P=UI 算出的其实是【发出】的功率。";
+            ? "💡 提示：在【关联】参考方向下，公式 P=UI 直接计算出的就是【吸收】的功率。" 
+            : "💡 提示：在【非关联】参考方向下，公式 P=UI 直接计算出的其实是【发出】的功率。";
     }
-    else if (stepId === 5) errMsg = "💡 提示：把 Step 1 和 2 的数值直接相乘。";
-    else if (stepId === 6) errMsg = "💡 提示：电阻永远消耗能量，结合刚才算出的正负号判断。";
+    else if (stepId === 5) errMsg = "💡 提示：把 Step 1 和 2 的数值直接相乘，注意正负号。";
+    else if (stepId === 6) errMsg = "💡 提示：不管方向怎么设，纯电阻永远都在消耗（吸收）能量。结合刚才算出的正负号想一想。";
     
     showFeedback(stepId, errMsg);
     updateUI();
@@ -421,7 +422,7 @@ function handleAnswer(e, stepId) {
 }
 
 function showFinalEq() {
-  const { uVal, iVal, isAssoc, pCalc } = getExpected();
+  const { uVal, iVal, isAssoc, pCalc, pFormulaMeans } = getExpected();
   const eqBox = document.getElementById('eq-final');
   
   const uCls = uVal >= 0 ? 'val-pos' : 'val-neg';
@@ -429,15 +430,15 @@ function showFinalEq() {
   const pCls = pCalc >= 0 ? 'val-pos' : 'val-neg';
 
   let html = `<b>✅ 逻辑推导完成：</b><br><br>`;
-  html += `U = <span class="${uCls}">${uVal} V</span>，I = <span class="${iCls}">${iVal} A</span><br>`;
+  html += `电压 U = <span class="${uCls}">${uVal} V</span>，电流 I = <span class="${iCls}">${iVal} A</span><br>`;
   html += `P = U × I = <span class="${pCls}">${pCalc} W</span><br>`;
   
   if (isAssoc) {
     html += `当前为【关联】，实际吸收 20W。<br><br>`;
-    html += `<span style="color:var(--amber); font-weight:bold;">⚠️ 还没体验过“非关联”？请翻转画布上的参考方向，再走一遍流程！</span>`;
+    html += `<span style="color:var(--amber); font-weight:bold;">⚠️ 你还没体验过“非关联”状态。请点击左侧画布翻转参考方向，再走一遍流程，感受一下算出来的负号！</span>`;
   } else {
     html += `当前为【非关联】，P<0 但实际依然吸收 20W。<br><br>`;
-    html += `<span style="color:var(--green); font-weight:bold;">✅ 太棒了，你已成功体验非关联状态下的符号变化。</span>`;
+    html += `<span style="color:var(--green); font-weight:bold;">✅ 太棒了，你已成功体验了非关联状态下的符号变化，现在可以去生成学情提问了。</span>`;
   }
 
   eqBox.innerHTML = html;
@@ -446,7 +447,6 @@ function showFinalEq() {
 
 function updateUI() {
   document.getElementById('m-flip').textContent = state.flipCount + ' 次';
-  document.getElementById('m-poe-error').textContent = state.poePredictErrors + ' 次';
   document.getElementById('m-error').textContent = state.errorCount + ' 次';
   const doneCount = document.querySelectorAll('.step.done').length;
   document.getElementById('m-progress').textContent = doneCount + ' / 6';
@@ -473,13 +473,12 @@ document.getElementById('step-4').addEventListener('click', e => handleAnswer(e,
 document.getElementById('step-5').addEventListener('click', e => handleAnswer(e, 5));
 document.getElementById('step-6').addEventListener('click', e => handleAnswer(e, 6));
 
-/* ================= 导出纯学情数据给学习通 AI ================= */
+/* ================= 导出学情数据给学习通 AI ================= */
 document.getElementById('btn-build').addEventListener('click', () => {
   const warnBox = document.getElementById('warn-box');
   const ta = document.getElementById('report-text');
   const doneCount = document.querySelectorAll('.step.done').length;
 
-  // 双重拦截
   if (doneCount < 6) {
     ta.classList.remove('show');
     warnBox.innerHTML = '❌ 拦截失败：请先完成 6 步推理！';
@@ -497,9 +496,8 @@ document.getElementById('btn-build').addEventListener('click', () => {
   warnBox.classList.remove('show');
   const { uVal, iVal, isAssoc, pCalc } = getExpected();
   
-  // 【纯数据输出，不带指令】
   const text = `【电路原理·参考方向学情数据】
-- 操作轨迹：翻转参考方向 ${state.flipCount} 次，POE符号直觉预测失误 ${state.poePredictErrors} 次，总试错 ${state.errorCount} 次。
+- 操作轨迹：翻转参考方向 ${state.flipCount} 次，总试错 ${state.errorCount} 次。
 - 最终通关状态：
   设定电压参考方向：U ${state.refU === 1 ? '上正下负' : '下正上负'}
   设定电流参考方向：I ${state.refI === 1 ? '从上到下' : '从下到上'}
@@ -524,7 +522,11 @@ document.getElementById('btn-copy').addEventListener('click', async () => {
     await navigator.clipboard.writeText(ta.value);
     warnBox.innerHTML = '✅ 已复制，去学习通粘贴给 AI 吧！';
     warnBox.classList.add('show');
-    setTimeout(() => warnBox.classList.remove('show'), 3000);
+    warnBox.style.background = 'var(--green)';
+    setTimeout(() => {
+      warnBox.classList.remove('show');
+      warnBox.style.background = 'var(--pink)';
+    }, 3000);
   } catch {
     ta.select();
     document.execCommand('copy');
