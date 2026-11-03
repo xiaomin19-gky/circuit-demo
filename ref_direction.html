@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>参考方向与符号法则 · POE探究闯关</title>
+<style>
+:root{
+  --bg:#0a0f1c; --panel:#121a2c; --line:#22304d; --text:#e8eefc;
+  --muted:#8ea0c6; --cyan:#22d3ee; --amber:#fbbf24; --green:#34d399;
+  --pink:#f472b6; --violet:#a78bfa; --gray:#4a6a9e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  background:radial-gradient(900px 500px at 50% -10%, #16294a 0%, transparent 60%), var(--bg);
+  color:var(--text); min-height:100vh; display:flex; justify-content:center; padding:28px 16px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1150px; width:100%;}
+header{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.logo{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:26px;background:linear-gradient(135deg,#f472b6,#6366f1);box-shadow:0 8px 30px rgba(244,114,182,.3);}
+h1{font-size:22px;font-weight:700;letter-spacing:.5px}
+header p{color:var(--muted);font-size:13px;margin-top:4px}
+
+.lab{display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:start}
+@media(max-width:900px){.lab{grid-template-columns:1fr}}
+
+.stage{
+  background:linear-gradient(180deg,#0e1626,#0b1120); border:1px solid var(--line);
+  border-radius:18px; padding:8px; overflow:hidden; box-shadow:0 20px 50px -20px rgba(0,0,0,.85);
+}
+canvas{display:block;width:100%;height:420px;border-radius:12px;cursor:pointer;}
+
+.card{
+  background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.008));
+  border:1px solid var(--line); border-radius:16px; padding:18px; margin-bottom:16px;
+}
+.card h3{font-size:14px;color:var(--cyan);margin-bottom:12px;border-bottom:1px solid rgba(34,211,238,.2);padding-bottom:8px; display:flex; justify-content:space-between;}
+
+/* 闯关问答区 */
+.step{
+  background:rgba(11,17,32,.6); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:12px;
+  opacity:0.4; pointer-events:none; transition:all .4s ease;
+}
+.step.active{opacity:1; pointer-events:auto; border-color:rgba(34,211,238,.5); box-shadow:0 0 15px rgba(34,211,238,.1);}
+.step.done{opacity:1; border-color:var(--green); background:rgba(52,211,153,.05);}
+.step-title{font-size:13px; font-weight:600; margin-bottom:10px; color:var(--text); line-height: 1.5;}
+.poe-tag { background: rgba(251,191,36,.2); color: var(--amber); font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-weight: bold; }
+.opts{display:flex; gap:8px;}
+.opt-btn{
+  flex:1; border:1px solid var(--line); background:rgba(255,255,255,.03); color:var(--text);
+  padding:10px; border-radius:8px; font-size:13px; cursor:pointer; transition:.2s; font-family:inherit;
+}
+.opt-btn:hover{background:rgba(255,255,255,.08);}
+.opt-btn.correct{background:rgba(52,211,153,.2); border-color:var(--green); color:var(--green);}
+.opt-btn.wrong{background:rgba(244,114,182,.2); border-color:var(--pink); color:var(--pink); animation:shake .4s;}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* 错误提示文字 */
+.feedback {
+  font-size: 12.5px; color: #fff; background: rgba(244,114,182,.15); 
+  border-left: 3px solid var(--pink); padding: 8px 12px; border-radius: 4px;
+  margin-top: 10px; display: none; line-height: 1.5;
+}
+.feedback.show { display: block; animation: fadeIn .3s; }
+@keyframes fadeIn { from{opacity:0; transform:translateY(-5px)} to{opacity:1; transform:none} }
+
+/* 最终公式映射 */
+.eq-box{
+  background:#0b1120; border:1px dashed var(--amber); border-radius:12px; padding:16px;
+  font-family:ui-monospace,Consolas,monospace; font-size:14px; line-height:1.8; display:none;
+}
+.eq-box.show{display:block; animation:fade .5s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.val-pos{ color:var(--cyan); font-weight:bold;}
+.val-neg{ color:var(--pink); font-weight:bold;}
+
+.kv{display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px dashed rgba(90,130,200,.18);}
+.kv span:first-child{color:var(--muted);}
+.kv span:last-child{font-weight:600;}
+
+/* 报告区 */
+.btn{
+  border:1px solid var(--line); background:rgba(255,255,255,.04); color:var(--text);
+  padding:9px 14px; border-radius:10px; cursor:pointer; font-size:13px; font-family:inherit; transition:.2s; width:100%;
+}
+.btn:hover{background:rgba(34,211,238,.12); border-color:rgba(34,211,238,.4);}
+textarea{
+  width:100%;margin-top:12px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;line-height:1.6;
+  background:#0b1120;color:#c8d6f0;border:1px solid #22304d;border-radius:10px;padding:10px;resize:vertical; display:none;
+}
+textarea.show{display:block;}
+
+/* 拦截警告样式 */
+.warn-text {
+  color: var(--pink); font-size: 12.5px; font-weight: 600; margin-top: 8px; 
+  display: none; line-height: 1.5; text-align: center;
+  background: rgba(244,114,182,.1); padding: 8px; border-radius: 8px; border: 1px solid rgba(244,114,182,.3);
+}
+.warn-text.show { display: block; animation: shake .4s; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">⚡</div>
+    <div>
+      <h1>拓扑与方程 · 参考方向与符号法则</h1>
+      <p>POE探究：先预测，再观察，后解释。点击画布翻转参考方向开始体验</p>
+    </div>
+  </header>
+
+  <div class="lab">
+    <div class="stage" id="canvas-stage">
+      <canvas id="cv-ref"></canvas>
+    </div>
+
+    <div>
+      <div class="card">
+        <h3>解题推演</h3>
+        
+        <!-- Step 1 -->
+        <div class="step active" id="step-1">
+          <div class="step-title">Step 1：已知实际电压为 10V (上正下负)。对比高亮参考电压，其代数值 U 是？<span class="poe-tag">POE 直觉预测</span></div>
+          <div class="opts">
+            <button class="opt-btn" data-val="10">+10 V</button>
+            <button class="opt-btn" data-val="-10">-10 V</button>
+          </div>
+          <div class="feedback" id="fb-1"></div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step" id="step-2">
+          <div class="step-title">Step 2：已知实际电流为 2A (从上到下)。对比高亮参考电流，其代数值 I 是？<span class="poe-tag">POE 直觉预测</span></div>
+          <div class="opts">
+            <button class="opt-btn" data-val="2">+2 A</button>
+            <button class="opt-btn" data-val="-2">-2 A</button>
+          </div>
+          <div class="feedback" id="fb-2"></div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step" id="step-3">
+          <div class="step-title">Step 3：高亮的参考电压与参考电流，是关联还是非关联？</div>
+          <div class="opts">
+            <button class="opt-btn" data-val="assoc">关联参考方向</button>
+            <button class="opt-btn" data-val="non-assoc">非关联参考方向</button>
+          </div>
+          <div class="feedback" id="fb-3"></div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step" id="step-4">
+          <div class="step-title">Step 4：在当前的【<span id="dir-text-4" style="color:var(--cyan)">关联</span>】参考方向下，公式 P = U × I 算出的是该元件的？</div>
+          <div class="opts">
+            <button class="opt-btn" data-val="absorb">吸收功率</button>
+            <button class="opt-btn" data-val="emit">发出功率</button>
+          </div>
+          <div class="feedback" id="fb-4"></div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="step" id="step-5">
+          <div class="step-title">Step 5：现在代入数值计算。P = U × I 的代数结果等于？</div>
+          <div class="opts">
+            <button class="opt-btn" data-val="20">+20 W</button>
+            <button class="opt-btn" data-val="-20">-20 W</button>
+          </div>
+          <div class="feedback" id="fb-5"></div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="step" id="step-6">
+          <div class="step-title">Step 6：结合前两步（公式含义 + 代数结果），这只纯电阻实际处于什么状态？</div>
+          <div class="opts">
+            <button class="opt-btn" data-val="abs-20">吸收 20 W</button>
+            <button class="opt-btn" data-val="emit-20">发出 20 W</button>
+          </div>
+          <div class="feedback" id="fb-6"></div>
+        </div>
+
+        <div class="eq-box" id="eq-final"></div>
+      </div>
+
+      <!-- 报告区 -->
+      <div class="card">
+        <h3>学情数据与 AI 诊断</h3>
+        <div class="kv"><span>翻转操作次数</span><span id="m-flip" style="color:var(--cyan)">0 次</span></div>
+        <div class="kv"><span>符号预测错误</span><span id="m-poe-error" style="color:var(--amber)">0 次</span></div>
+        <div class="kv"><span>推理总试错</span><span id="m-error" style="color:var(--pink)">0 次</span></div>
+        <div class="kv"><span>推理完成度</span><span id="m-progress" style="color:var(--green)">0 / 6</span></div>
+        
+        <div style="margin-top:14px; display:flex; gap:8px;">
+          <button class="btn" id="btn-build">生成纯学情数据</button>
+          <button class="btn" id="btn-copy">一键复制</button>
+        </div>
+        <textarea id="report-text" rows="10" placeholder="点击上方按钮生成，复制后直接粘贴给学习通 AI"></textarea>
+        <div class="warn-text" id="warn-box"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const cv = document.getElementById('cv-ref');
+const ctx = cv.getContext('2d');
+let W = 0, H = 0;
+
+function resize(){
+  const dpr = window.devicePixelRatio || 1;
+  const r = cv.getBoundingClientRect();
+  cv.width = r.width * dpr;
+  cv.height = r.height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  W = r.width; H = r.height;
+}
+window.addEventListener('resize', resize);
+resize();
+
+const state = {
+  realU: 10,
+  realI: 2,
+  R: 5,
+  refU: 1, 
+  refI: 1, 
+  currentStep: 1,
+  flipCount: 0,
+  errorCount: 0,
+  poePredictErrors: 0, // 记录在Step1和Step2的首次预测失误
+  hasCompletedNonAssoc: false // 标记是否在非关联状态下完成过推理
+};
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle = 'rgba(90,130,200,.05)'; ctx.lineWidth = 1;
+  for(let x=0; x<W; x+=30){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for(let y=0; y<H; y+=30){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+  const cx = W / 2, cy = H / 2;
+  const rw = 70, rh = 100;
+
+  ctx.strokeStyle = '#4a6a9e'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(cx, 40); ctx.lineTo(cx, cy - rh/2);
+  ctx.moveTo(cx, cy + rh/2); ctx.lineTo(cx, H - 40); ctx.stroke();
+
+  ctx.fillStyle = '#1a2538'; ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.roundRect(cx - rw/2, cy - rh/2, rw, rh, 8); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#fbbf24'; ctx.font = 'bold 18px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(state.R + 'Ω', cx, cy);
+
+  // 左侧：实际方向
+  ctx.save();
+  ctx.globalAlpha = 0.35;
+  const rVx = cx - 140;
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 14px sans-serif';
+  ctx.fillText('+', rVx, cy - rh/2 - 10);
+  ctx.fillText('−', rVx, cy + rh/2 + 10);
+  ctx.beginPath(); ctx.moveTo(rVx, cy - rh/2); ctx.lineTo(rVx, cy + rh/2);
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(rVx, cy + rh/2); ctx.lineTo(rVx - 5, cy + rh/2 - 10); ctx.lineTo(rVx + 5, cy + rh/2 - 10); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.fillText('实际 U = 10V', rVx, cy - rh/2 - 35);
+
+  const rIx = cx + 140;
+  ctx.beginPath(); ctx.moveTo(rIx, 80); ctx.lineTo(rIx, H - 80);
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(rIx, H - 80); ctx.lineTo(rIx - 6, H - 92); ctx.lineTo(rIx + 6, H - 92); ctx.fill();
+  ctx.fillText('实际 I = 2A', rIx, 55);
+  ctx.restore();
+
+  // 中间：参考方向
+  const vx = cx - 70;
+  let plusY, minusY;
+  if (state.refU === 1) { plusY = cy - rh/2 - 20; minusY = cy + rh/2 + 20; }
+  else { plusY = cy + rh/2 + 20; minusY = cy - rh/2 - 20; }
+
+  ctx.fillStyle = '#22d3ee';
+  ctx.fillText('+', vx, plusY);
+  ctx.fillText('−', vx, minusY);
+  
+  let startY = plusY, endY = minusY;
+  const lineStartY = startY + (startY < endY ? 12 : -12);
+  const lineEndY = endY + (startY < endY ? -12 : 12);
+  
+  ctx.beginPath(); ctx.moveTo(vx, lineStartY); ctx.lineTo(vx, lineEndY);
+  ctx.strokeStyle = '#22d3ee'; ctx.lineWidth = 2; ctx.stroke();
+  
+  let triangleDir = startY < endY ? 1 : -1; 
+  ctx.beginPath();
+  ctx.moveTo(vx, lineEndY);
+  ctx.lineTo(vx - 5, lineEndY - triangleDir * 10);
+  ctx.lineTo(vx + 5, lineEndY - triangleDir * 10);
+  ctx.fill();
+  ctx.fillText('参考 U', vx - 30, cy);
+
+  const ix = cx + 70;
+  let iStartY, iEndY;
+  if (state.refI === 1) { iStartY = 60; iEndY = H - 60; } else { iStartY = H - 60; iEndY = 60; }
+
+  ctx.beginPath(); ctx.moveTo(ix, iStartY); ctx.lineTo(ix, iEndY);
+  ctx.strokeStyle = '#f472b6'; ctx.lineWidth = 3; ctx.stroke();
+  
+  let iDir = iStartY < iEndY ? 1 : -1;
+  ctx.beginPath();
+  ctx.moveTo(ix, iEndY);
+  ctx.lineTo(ix - 6, iEndY - iDir * 12);
+  ctx.lineTo(ix + 6, iEndY - iDir * 12);
+  ctx.fillStyle = '#f472b6'; ctx.fill();
+  ctx.fillText('参考 I', ix + 30, cy);
+
+  ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.font = '13px sans-serif';
+  ctx.fillText('👆 点击高亮的 U 或 I 区域翻转参考方向', cx, 25);
+}
+
+function getExpected() {
+  const uVal = state.realU * state.refU;
+  const iVal = state.realI * state.refI;
+  const isAssoc = (state.refU === state.refI);
+  const pCalc = uVal * iVal; 
+  const pFormulaMeans = isAssoc ? 'absorb' : 'emit';
+  return { uVal, iVal, isAssoc, pCalc, pFormulaMeans };
+}
+
+function showFeedback(stepId, msg) {
+  const fb = document.getElementById('fb-' + stepId);
+  fb.innerHTML = msg; 
+  fb.classList.add('show');
+}
+
+function hideFeedback(stepId) {
+  document.getElementById('fb-' + stepId).classList.remove('show');
+}
+
+function resetSteps() {
+  state.currentStep = 1;
+  document.querySelectorAll('.step').forEach((el, idx) => {
+    el.classList.remove('done');
+    if (idx === 0) el.classList.add('active');
+    else el.classList.remove('active');
+    el.querySelectorAll('.opt-btn').forEach(b => b.className = 'opt-btn');
+    el.querySelectorAll('.feedback').forEach(f => f.classList.remove('show'));
+  });
+  
+  const isAssoc = (state.refU === state.refI);
+  document.getElementById('dir-text-4').textContent = isAssoc ? '关联' : '非关联';
+  
+  document.getElementById('eq-final').classList.remove('show');
+  document.getElementById('warn-box').classList.remove('show');
+  updateUI();
+}
+
+function handleAnswer(e, stepId) {
+  const btn = e.target.closest('.opt-btn');
+  if (!btn || btn.classList.contains('correct')) return;
+
+  const expected = getExpected();
+  const val = btn.dataset.val;
+  let isCorrect = false;
+
+  if (stepId === 1) isCorrect = (val == expected.uVal);
+  else if (stepId === 2) isCorrect = (val == expected.iVal);
+  else if (stepId === 3) isCorrect = (val === (expected.isAssoc ? 'assoc' : 'non-assoc'));
+  else if (stepId === 4) isCorrect = (val === expected.pFormulaMeans);
+  else if (stepId === 5) isCorrect = (val == expected.pCalc);
+  else if (stepId === 6) isCorrect = (val === 'abs-20');
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    hideFeedback(stepId); 
+    
+    const stepEl = document.getElementById('step-' + stepId);
+    stepEl.classList.remove('active');
+    stepEl.classList.add('done');
+
+    if (stepId < 6) {
+      state.currentStep++;
+      document.getElementById('step-' + state.currentStep).classList.add('active');
+    } else {
+      if (!expected.isAssoc) state.hasCompletedNonAssoc = true;
+      showFinalEq();
+    }
+    updateUI();
+  } else {
+    state.errorCount++;
+    // 只有在前两步首次预测错误时，记录POE失误
+    if (stepId <= 2 && !document.getElementById('step-' + stepId).classList.contains('done')) {
+      state.poePredictErrors++;
+    }
+    
+    btn.classList.add('wrong');
+    setTimeout(() => btn.classList.remove('wrong'), 800);
+    
+    let errMsg = "";
+    if (stepId === 1) {
+        errMsg = (state.refU === 1) 
+          ? "💡 <b>POE 预测失败：</b>参考电压 '+' 在上方，应取正。" 
+          : "💡 <b>POE 预测失败：</b>参考电压 '+' 在下方，方向相反，应带负号。";
+    }
+    else if (stepId === 2) {
+        errMsg = (state.refI === 1) 
+          ? "💡 <b>POE 预测失败：</b>参考电流箭头向下，应取正。" 
+          : "💡 <b>POE 预测失败：</b>参考电流箭头向上，方向相反，应带负号。";
+    }
+    else if (stepId === 3) errMsg = "💡 提示：电流从 '+' 流入为关联，从 '-' 流入为非关联。";
+    else if (stepId === 4) {
+        errMsg = expected.isAssoc 
+            ? "💡 提示：在【关联】参考方向下，公式 P=UI 算出的就是【吸收】的功率。" 
+            : "💡 提示：在【非关联】参考方向下，公式 P=UI 算出的其实是【发出】的功率。";
+    }
+    else if (stepId === 5) errMsg = "💡 提示：把 Step 1 和 2 的数值直接相乘。";
+    else if (stepId === 6) errMsg = "💡 提示：电阻永远消耗能量，结合刚才算出的正负号判断。";
+    
+    showFeedback(stepId, errMsg);
+    updateUI();
+  }
+}
+
+function showFinalEq() {
+  const { uVal, iVal, isAssoc, pCalc } = getExpected();
+  const eqBox = document.getElementById('eq-final');
+  
+  const uCls = uVal >= 0 ? 'val-pos' : 'val-neg';
+  const iCls = iVal >= 0 ? 'val-pos' : 'val-neg';
+  const pCls = pCalc >= 0 ? 'val-pos' : 'val-neg';
+
+  let html = `<b>✅ 逻辑推导完成：</b><br><br>`;
+  html += `U = <span class="${uCls}">${uVal} V</span>，I = <span class="${iCls}">${iVal} A</span><br>`;
+  html += `P = U × I = <span class="${pCls}">${pCalc} W</span><br>`;
+  
+  if (isAssoc) {
+    html += `当前为【关联】，实际吸收 20W。<br><br>`;
+    html += `<span style="color:var(--amber); font-weight:bold;">⚠️ 还没体验过“非关联”？请翻转画布上的参考方向，再走一遍流程！</span>`;
+  } else {
+    html += `当前为【非关联】，P<0 但实际依然吸收 20W。<br><br>`;
+    html += `<span style="color:var(--green); font-weight:bold;">✅ 太棒了，你已成功体验非关联状态下的符号变化。</span>`;
+  }
+
+  eqBox.innerHTML = html;
+  eqBox.classList.add('show');
+}
+
+function updateUI() {
+  document.getElementById('m-flip').textContent = state.flipCount + ' 次';
+  document.getElementById('m-poe-error').textContent = state.poePredictErrors + ' 次';
+  document.getElementById('m-error').textContent = state.errorCount + ' 次';
+  const doneCount = document.querySelectorAll('.step.done').length;
+  document.getElementById('m-progress').textContent = doneCount + ' / 6';
+}
+
+cv.addEventListener('click', (e) => {
+  const rect = cv.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const cx = W / 2;
+
+  if (x < cx - 40) state.refU *= -1;
+  else if (x > cx + 30) state.refI *= -1;
+  else return;
+
+  state.flipCount++;
+  draw();
+  resetSteps(); 
+});
+
+document.getElementById('step-1').addEventListener('click', e => handleAnswer(e, 1));
+document.getElementById('step-2').addEventListener('click', e => handleAnswer(e, 2));
+document.getElementById('step-3').addEventListener('click', e => handleAnswer(e, 3));
+document.getElementById('step-4').addEventListener('click', e => handleAnswer(e, 4));
+document.getElementById('step-5').addEventListener('click', e => handleAnswer(e, 5));
+document.getElementById('step-6').addEventListener('click', e => handleAnswer(e, 6));
+
+/* ================= 导出纯学情数据给学习通 AI ================= */
+document.getElementById('btn-build').addEventListener('click', () => {
+  const warnBox = document.getElementById('warn-box');
+  const ta = document.getElementById('report-text');
+  const doneCount = document.querySelectorAll('.step.done').length;
+
+  // 双重拦截
+  if (doneCount < 6) {
+    ta.classList.remove('show');
+    warnBox.innerHTML = '❌ 拦截失败：请先完成 6 步推理！';
+    warnBox.classList.add('show');
+    return;
+  }
+
+  if (!state.hasCompletedNonAssoc) {
+    ta.classList.remove('show');
+    warnBox.innerHTML = '⚠️ 拦截成功：你只玩了“关联”方向。请点击画布翻转，在非关联状态下重走 6 步。';
+    warnBox.classList.add('show');
+    return;
+  }
+
+  warnBox.classList.remove('show');
+  const { uVal, iVal, isAssoc, pCalc } = getExpected();
+  
+  // 【纯数据输出，不带指令】
+  const text = `【电路原理·参考方向学情数据】
+- 操作轨迹：翻转参考方向 ${state.flipCount} 次，POE符号直觉预测失误 ${state.poePredictErrors} 次，总试错 ${state.errorCount} 次。
+- 最终通关状态：
+  设定电压参考方向：U ${state.refU === 1 ? '上正下负' : '下正上负'}
+  设定电流参考方向：I ${state.refI === 1 ? '从上到下' : '从下到上'}
+  判定关联性：【${isAssoc ? '关联' : '非关联'}】
+  代数计算结果：U = ${uVal} V，I = ${iVal} A，P = ${pCalc} W
+  物理真实结论：实际吸收 20W。
+（请助教阅读以上我的操作记录，对我进行考核与追问）`;
+
+  ta.value = text;
+  ta.classList.add('show');
+});
+
+document.getElementById('btn-copy').addEventListener('click', async () => {
+  const ta = document.getElementById('report-text');
+  const warnBox = document.getElementById('warn-box');
+  if (!ta.value) { 
+    warnBox.innerHTML = '请先成功生成学情数据！';
+    warnBox.classList.add('show');
+    return; 
+  }
+  try {
+    await navigator.clipboard.writeText(ta.value);
+    warnBox.innerHTML = '✅ 已复制，去学习通粘贴给 AI 吧！';
+    warnBox.classList.add('show');
+    setTimeout(() => warnBox.classList.remove('show'), 3000);
+  } catch {
+    ta.select();
+    document.execCommand('copy');
+  }
+});
+
+draw();
+updateUI();
+</script>
+</body>
+</html>
