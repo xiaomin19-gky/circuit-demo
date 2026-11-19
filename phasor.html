@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>相量法 · 空间映射</title>
+<title>相量法 · 空间映射（余弦实轴垂直基准）</title>
 <style>
 :root{
   --bg:#f4f7f6; --panel:#ffffff; --line:#e2e8f0; --text:#2c3e50;
@@ -119,12 +119,13 @@ textarea{
 }
 textarea.show{display:block;}
 .warn-text {
-  color: #fff; font-size:16px; font-weight: 600; margin-top: 14px; 
+  color: #fff; font-size:16px; font-weight: 600; margin-top: 14px;
   display: none; line-height: 1.5; text-align: center;
   background: var(--pink); padding: 16px; border-radius: 10px;
 }
 .warn-text.show { display: block; animation: shake .4s; }
 @keyframes fadeIn { from{opacity:0; transform:translateY(5px)} to{opacity:1; transform:none} }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
 </style>
 </head>
 <body>
@@ -133,7 +134,7 @@ textarea.show{display:block;}
     <div class="logo">🌊</div>
     <div>
       <h1>相量法 · 空间映射</h1>
-      <p>严格区分：静止的相量、旋转的矢量、纵轴上的波形</p>
+      <p>垂直实轴投影高度 = 瞬时值 | 坐标轴严格按此布局</p>
     </div>
   </header>
 
@@ -160,7 +161,7 @@ textarea.show{display:block;}
           <label>初相位角 φ <span class="val" id="val-phi1">30°</span></label>
           <input type="range" id="slider-phi1" min="-180" max="180" step="15" value="30" oninput="onMoveStep1(this.value)">
         </div>
-        
+
         <div class="eq-box">
           <div class="label">相量（复数，静止于 t=0）</div>
           <div style="font-size:22px; font-weight:bold; color:var(--cyan);">U̇ = U<sub>m</sub> ∠ φ</div>
@@ -168,28 +169,28 @@ textarea.show{display:block;}
 
         <div class="physics-conclusion">
           💡 <b>核心概念：</b><br>
-          相量是一个**静止的复数**，它代表了正弦量在 t=0 时刻的初始状态。<br>
-          箭头长度代表幅值 U<sub>m</sub>，与实轴夹角代表初相 φ。
+          相量是一个<b>静止的复数</b>。箭头长度代表幅值 U<sub>m</sub>，与垂直实轴的夹角代表初相 φ。<br>
+          注意看：它在<b>实轴（垂直方向）上的投影高度</b>，正好等于 t=0 时的余弦瞬时值。
         </div>
         <button class="btn locked" id="btn-next-1" style="margin-top:20px;" onclick="checkMoveStep1()">请先拖动滑块</button>
       </div>
 
       <!-- Step 2 -->
       <div class="card" id="panel-2" style="display:none;">
-        <h3>Step 2: 乘上时间因子 (旋转矢量)</h3>
+        <h3>Step 2: 乘上时间因子（旋转矢量）</h3>
         <div class="ctrl">
           <label>旋转角度 ωt <span class="val" id="val-angle2">0°</span></label>
           <input type="range" id="slider-angle2" min="0" max="360" step="5" value="0" oninput="onMoveStep2(this.value)">
         </div>
-        
+
         <div class="eq-box">
           <div class="label">旋转矢量（随时间变化）</div>
           <div style="font-size:22px; font-weight:bold; color:var(--cyan);">U̇(t) = U<sub>m</sub> ∠ (ωt + φ)</div>
         </div>
 
         <div class="physics-conclusion">
-          💡 给静止的相量乘上旋转因子 e<sup>jωt</sup>，它就变成了一个**旋转矢量**。<br>
-          请拖动滑块，看看它的纵轴高度（投影）发生了什么变化？
+          💡 给静止的相量乘上旋转因子 e<sup>jωt</sup>，它就变成了一个<b>旋转矢量</b>。<br>
+          请拖动滑块，看看它在<b>实轴（垂直方向）上的投影高度</b>发生了什么变化？
         </div>
         <button class="btn locked" id="btn-next-2" style="margin-top:20px;" onclick="checkMoveStep2()">请先拖动滑块</button>
       </div>
@@ -198,33 +199,33 @@ textarea.show{display:block;}
       <div class="card" id="panel-3" style="display:none;">
         <h3>Step 3: 动态投影生成波形</h3>
         <div class="physics-conclusion" style="margin-bottom:20px;">
-          💡 现在让旋转矢量自动转动。<br>
-          它在纵轴上的投影高度，随时间展开，就是**正弦波**。
+          💡 让旋转矢量自动逆时针转动。<br>
+          它在<b>实轴（垂直方向）上的投影高度</b>，随时间展开，就是右侧的<b>余弦波</b>。
         </div>
-        
+
         <div class="eq-box">
-          <div class="label">瞬时值（纵轴投影）</div>
-          <div style="font-size:22px; font-weight:bold; color:var(--cyan);">u(t) = U<sub>m</sub> · sin(ωt + φ)</div>
+          <div class="label">瞬时值（实轴投影）</div>
+          <div style="font-size:22px; font-weight:bold; color:var(--cyan);">u(t) = U<sub>m</sub> · cos(ωt + φ)</div>
         </div>
 
         <div class="physics-conclusion">
-          注意观察：左侧矢量的投影点高度，与右侧波形最前沿（扫描处）的高度，**永远在同一水平线上**！
+          注意观察：左侧矢量端点在实轴上的高度，与右侧波形前沿的高度，<b>永远在同一水平线上！</b>
         </div>
         <button class="btn" style="margin-top:20px;" onclick="unlockTab4()">完成观察，进入下一步</button>
       </div>
 
       <!-- Step 4 -->
       <div class="card" id="panel-4" style="display:none;">
-        <h3>Step 4: 波形反推相量 (深度 POE)</h3>
+        <h3>Step 4: 波形反推相量（深度 POE）</h3>
         <div class="physics-conclusion" style="margin-bottom:20px;">
           💡 请观察右侧波形：<br>
           <b>红色电压波形比绿色电流波形先到达波峰</b>（位于左侧）。
         </div>
-        
+
         <div class="eq-box">
           <div class="label">瞬时值方程</div>
-          <div style="font-size:18px;">u(t) = U<sub>m</sub> · sin(ωt + φ)</div>
-          <div style="font-size:18px;">i(t) = I<sub>m</sub> · sin(ωt)</div>
+          <div style="font-size:18px;">u(t) = U<sub>m</sub> · cos(ωt + φ)</div>
+          <div style="font-size:18px;">i(t) = I<sub>m</sub> · cos(ωt)</div>
         </div>
 
         <div class="physics-conclusion">
@@ -247,7 +248,7 @@ textarea.show{display:block;}
 <div class="modal-overlay" id="micro-poe-modal">
   <div class="modal">
     <h4>🧐 停顿一下</h4>
-    <p>你刚刚拖动了滑块，请回想一下：<br>在相量旋转的过程中，**哪个物理量**发生了变化？</p>
+    <p>你刚刚拖动了滑块，请回想一下：<br>在相量旋转的过程中，<b>哪个物理量</b>发生了变化？</p>
     <div class="row" id="micro-poe-options">
       <button class="opt-btn" onclick="checkMicroPoe('length')">箭头的长度（幅值 U<sub>m</sub>）</button>
       <button class="opt-btn" onclick="checkMicroPoe('angle')">箭头的角度（相位 ωt + φ）</button>
@@ -260,7 +261,7 @@ textarea.show{display:block;}
 <!-- Step 4 深度 POE 弹窗 -->
 <div class="modal-overlay" id="poe-modal">
   <div class="modal">
-    <h4>🤔 预测一下 (POE)</h4>
+    <h4>🤔 预测一下（POE）</h4>
     <p>已知示波器上：红色电压波形先于绿色电流波形到达波峰（向左平移）。<br>根据相量旋转规律，请预测左侧相量图中红绿箭头的相对位置：</p>
     <div class="row" id="poe-options">
       <button class="opt-btn" onclick="checkPoe('lead')">红色电压在逆时针前方（超前）</button>
@@ -286,7 +287,7 @@ const state = {
   phi1: 30,
   angle2: 0,
   phi4: 90,
-  time: 0, 
+  time: 0,
   lastTime: performance.now(),
   poePassed: false,
   poeErrorCount: 0,
@@ -296,7 +297,6 @@ const state = {
   hasMovedStep2: false
 };
 
-// 强制重新计算宽高
 function resize() {
     const rect = document.getElementById('canvas-stage').getBoundingClientRect();
     if (rect.width > 50) {
@@ -311,7 +311,6 @@ function resize() {
 window.addEventListener('resize', resize);
 setTimeout(resize, 100);
 
-// 绘图工具
 function drawLine(x1, y1, x2, y2, color = '#cbd5e1', width = 2) {
     ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
     ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineCap = 'round'; ctx.stroke();
@@ -328,106 +327,121 @@ function drawArrow(x1, y1, x2, y2, color, width = 3) {
     ctx.fillStyle = color; ctx.fill();
 }
 
-// 核心渲染循环
 function draw() {
     try {
         if (W < 100) {
             resize();
         }
-        
+
         ctx.clearRect(0, 0, W, H);
         const now = performance.now();
         const dt = (now - state.lastTime) / 1000;
         state.lastTime = now;
 
         if (state.isPlaying && state.step >= 3) {
-            state.time += dt * 0.8; 
+            state.time += dt * 0.8;
         }
 
         const cy = H / 2;
-        const leftW = Math.min(W * 0.4, 380); 
-        const cx = leftW / 2; 
+        const leftW = Math.min(W * 0.4, 380);
+        const cx = leftW / 2;
         const rightStart = leftW + 50;
         const rightW = W - rightStart - 50;
 
-        drawLine(cx - 180, cy, cx + 180, cy, '#e2e8f0', 2); 
-        drawLine(cx, cy - 200, cx, cy + 200, '#e2e8f0', 2); 
+        // ======== 坐标系：竖直向上 +1（实轴），水平向左 +j（虚轴），和参考图完全一致 ========
+        drawLine(cx, cy - 200, cx, cy + 200, '#e2e8f0', 2); // 实轴 竖直
+        drawLine(cx - 180, cy, cx + 150, cy, '#e2e8f0', 2); // 虚轴 水平
+
         ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 20px sans-serif'; ctx.textAlign = 'center';
-        ctx.fillText('复平面 (复数域)', cx, 40);
-        
+        ctx.fillText('复平面（复数域）', cx, 40);
+
         ctx.fillStyle = '#cbd5e1'; ctx.font = '14px sans-serif';
-        ctx.fillText('+1 (实轴)', cx + 150, cy + 20);
-        ctx.fillText('+j (虚轴)', cx + 30, cy - 180);
+        ctx.fillText('+1（实轴，垂直向上）', cx + 40, cy - 180);
+        ctx.fillText('+j（虚轴，水平向左）', cx - 100, cy + 20);
 
         if (state.step >= 2) {
             ctx.strokeStyle = '#f1f5f9'; ctx.lineWidth = 2;
             ctx.strokeRect(rightStart, cy - 200, rightW, 400);
             drawLine(rightStart, cy, rightStart + rightW, cy, '#e2e8f0', 2);
             ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 20px sans-serif';
-            ctx.fillText('时域波形 (实数域)', rightStart + rightW/2, 40);
+            ctx.fillText('时域波形（实数域）', rightStart + rightW/2, 40);
         }
 
         const radius = 140;
 
+        // 【核心修正】角度：从竖直向上(+实轴)逆时针为正，rad = ωt + φ
+        // 矢量端点：x = cx - radius*sin(rad) 向左+j；y = cy - radius*cos(rad) 向上+1
+        const getEndPoint = (rad) => {
+            return {
+                x: cx - radius * Math.sin(rad),
+                y: cy - radius * Math.cos(rad)
+            };
+        };
+
         // =============== Step 1 ===============
         if (state.step === 1) {
             const rad = state.phi1 * Math.PI / 180;
-            const endX = cx + radius * Math.cos(rad);
-            const endY = cy - radius * Math.sin(rad);
-            
+            const pt = getEndPoint(rad);
+
             if (state.phi1 !== 0) {
                 ctx.beginPath();
-                const endAng = -rad; 
-                ctx.arc(cx, cy, 40, 0, endAng, rad > 0); 
+                // 圆弧：从竖直向上，逆时针转到rad
+                ctx.arc(cx, cy, 40, -Math.PI/2, -Math.PI/2 + rad, rad < 0);
                 ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2; ctx.stroke();
                 ctx.fillStyle = '#f59e0b'; ctx.font = 'bold 16px sans-serif';
-                ctx.fillText(`φ`, cx + 55 * Math.cos(rad/2), cy - 55 * Math.sin(rad/2) + 5);
+                ctx.fillText(`φ`, cx - 55 * Math.sin(rad/2) - 15, cy - 55 * Math.cos(rad/2));
             }
 
+            // 实轴投影（竖直）
+            ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 5;
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, pt.y); ctx.stroke();
+
             ctx.setLineDash([6, 6]);
-            drawLine(cx, endY, endX, endY, 'rgba(236,72,153,0.5)', 2);
+            drawLine(pt.x, pt.y, cx, pt.y, 'rgba(236,72,153,0.5)', 2);
             ctx.setLineDash([]);
 
-            drawArrow(cx, cy, endX, endY, '#0ea5e9', 6);
-            
+            drawArrow(cx, cy, pt.x, pt.y, '#0ea5e9', 6);
             ctx.fillStyle = '#0ea5e9'; ctx.font = 'bold 20px sans-serif';
-            ctx.fillText('Uₘ', cx + (radius/2)*Math.cos(rad) - 15, cy - (radius/2)*Math.sin(rad) - 10);
+            ctx.fillText('Uₘ', cx - (radius/2)*Math.sin(rad) - 20, cy - (radius/2)*Math.cos(rad) - 10);
 
-            ctx.beginPath(); ctx.arc(cx, endY, 10, 0, Math.PI*2);
+            ctx.beginPath(); ctx.arc(cx, pt.y, 8, 0, Math.PI*2);
             ctx.fillStyle = '#ec4899'; ctx.fill();
 
             ctx.fillStyle = '#ec4899'; ctx.font = 'bold 20px sans-serif'; ctx.textAlign = 'left';
-            ctx.fillText(`纵轴投影 = Uₘ·sin(${state.phi1}°)`, endX + 20, endY);
+            ctx.fillText(`实轴投影 = Uₘ·cos(${state.phi1}°)`, pt.x - 120, pt.y - 10);
 
         // =============== Step 2 ===============
         } else if (state.step === 2) {
             const rad = state.angle2 * Math.PI / 180;
-            const endX = cx + radius * Math.cos(rad);
-            const endY = cy - radius * Math.sin(rad);
-            
-            drawArrow(cx, cy, endX, endY, '#0ea5e9', 6);
-            ctx.fillStyle = '#0ea5e9'; ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'left';
-            ctx.fillText('旋转矢量', endX + 15, endY - 10);
+            const pt = getEndPoint(rad);
 
-            ctx.beginPath(); ctx.arc(cx, endY, 10, 0, Math.PI*2);
-            ctx.fillStyle = '#ec4899'; ctx.fill();
+            drawArrow(cx, cy, pt.x, pt.y, '#0ea5e9', 6);
+            ctx.fillStyle = '#0ea5e9'; ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'left';
+            ctx.fillText('旋转矢量', pt.x - 120, pt.y - 10);
+
+            ctx.strokeStyle = 'rgba(236,72,153,0.5)'; ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, pt.y); ctx.stroke();
 
             ctx.setLineDash([6, 6]);
-            drawLine(cx, endY, rightStart, endY, 'rgba(236,72,153,0.4)', 2);
+            drawLine(pt.x, pt.y, cx, pt.y, 'rgba(236,72,153,0.3)', 2);
+            const curPx = rightStart + (rad / (2 * Math.PI)) * rightW;
+            drawLine(cx, pt.y, curPx, pt.y, 'rgba(236,72,153,0.5)', 2);
             ctx.setLineDash([]);
 
+            ctx.beginPath(); ctx.arc(cx, pt.y, 10, 0, Math.PI*2);
+            ctx.fillStyle = '#ec4899'; ctx.fill();
+
             ctx.beginPath();
-            const steps = Math.floor(state.angle2 / 2); 
+            const steps = Math.floor(state.angle2 / 2);
             for (let i = 0; i <= steps; i++) {
                 const a = (i * 2) * Math.PI / 180;
                 const x = rightStart + (a / (2 * Math.PI)) * rightW;
-                const y = cy - Math.sin(a) * 140;
+                const y = cy - Math.cos(a) * 140;
                 if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
             }
             ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 5; ctx.stroke();
 
-            const curPx = rightStart + (rad / (2 * Math.PI)) * rightW;
-            const curPy = cy - Math.sin(rad) * 140;
+            const curPy = cy - Math.cos(rad) * 140;
             ctx.beginPath(); ctx.arc(curPx, curPy, 10, 0, Math.PI*2);
             ctx.fillStyle = '#ec4899'; ctx.fill();
             ctx.fillStyle = '#ec4899'; ctx.font = 'bold 18px sans-serif';
@@ -436,32 +450,36 @@ function draw() {
         // =============== Step 3 ===============
         } else if (state.step === 3) {
             const rad = state.time;
-            const endX = cx + radius * Math.cos(rad);
-            const endY = cy - radius * Math.sin(rad);
-            
-            drawArrow(cx, cy, endX, endY, '#0ea5e9', 6);
-            ctx.fillStyle = '#0ea5e9'; ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'left';
-            ctx.fillText('旋转矢量', endX + 15, endY - 10);
+            const pt = getEndPoint(rad);
 
-            ctx.beginPath(); ctx.arc(cx, endY, 10, 0, Math.PI*2);
+            drawArrow(cx, cy, pt.x, pt.y, '#0ea5e9', 6);
+            ctx.fillStyle = '#0ea5e9'; ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'left';
+            ctx.fillText('旋转矢量', pt.x - 120, pt.y - 10);
+
+            ctx.strokeStyle = 'rgba(236,72,153,0.5)'; ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, pt.y); ctx.stroke();
+            ctx.setLineDash([6, 6]);
+            drawLine(pt.x, pt.y, cx, pt.y, 'rgba(236,72,153,0.3)', 2);
+            ctx.setLineDash([]);
+
+            ctx.beginPath(); ctx.arc(cx, pt.y, 10, 0, Math.PI*2);
             ctx.fillStyle = '#ec4899'; ctx.fill();
 
-            const windowSize = 4 * Math.PI; 
+            const windowSize = 4 * Math.PI;
             const t_now = state.time;
-            
+
             ctx.beginPath();
             let drawingStarted = false;
             for (let i = 0; i <= rightW; i++) {
-                let t = (t_now < windowSize) 
-                    ? (i / rightW) * windowSize 
+                let t = (t_now < windowSize)
+                    ? (i / rightW) * windowSize
                     : t_now - windowSize + (i / rightW) * windowSize;
-                
-                if (t > t_now) continue; 
-                
-                const val = Math.sin(t);
+                if (t > t_now) continue;
+
+                const val = Math.cos(t);
                 const x = rightStart + i;
                 const y = cy - val * 140;
-                
+
                 if (!drawingStarted) {
                     ctx.moveTo(x, y);
                     drawingStarted = true;
@@ -472,10 +490,10 @@ function draw() {
             ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 5; ctx.stroke();
 
             const scanX = (t_now < windowSize) ? rightStart + (t_now / windowSize) * rightW : rightStart + rightW;
-            const scanY = cy - Math.sin(t_now) * 140;
-            
+            const scanY = cy - Math.cos(t_now) * 140;
+
             ctx.setLineDash([6, 6]);
-            drawLine(cx, endY, scanX, endY, 'rgba(236,72,153,0.4)', 2);
+            drawLine(cx, pt.y, scanX, scanY, 'rgba(236,72,153,0.4)', 2);
             ctx.setLineDash([]);
 
             ctx.beginPath(); ctx.arc(scanX, scanY, 10, 0, Math.PI*2);
@@ -485,44 +503,41 @@ function draw() {
 
         // =============== Step 4 ===============
         } else if (state.step === 4) {
-            const radI = state.time; 
+            const radI = state.time;
             const radU = state.time + state.phi4 * Math.PI / 180;
-            
-            const endX_U = cx + radius * Math.cos(radU);
-            const endY_U = cy - radius * Math.sin(radU);
-            const endX_I = cx + radius * Math.cos(radI);
-            const endY_I = cy - radius * Math.sin(radI);
-            
+
+            const ptI = getEndPoint(radI);
+            const ptU = getEndPoint(radU);
+
             if (state.poePassed) {
-                drawArrow(cx, cy, endX_I, endY_I, '#10b981', 6); 
-                drawArrow(cx, cy, endX_U, endY_U, '#ef4444', 6); 
-                
-                ctx.fillStyle = '#ef4444'; ctx.font = 'bold 18px sans-serif'; 
-                ctx.fillText('U', endX_U + 20 * Math.cos(radU), endY_U - 20 * Math.sin(radU));
-                ctx.fillStyle = '#10b981'; 
-                ctx.fillText('I', endX_I + 20 * Math.cos(radI), endY_I - 20 * Math.sin(radI));
+                drawArrow(cx, cy, ptI.x, ptI.y, '#10b981', 6);
+                drawArrow(cx, cy, ptU.x, ptU.y, '#ef4444', 6);
+
+                ctx.fillStyle = '#ef4444'; ctx.font = 'bold 18px sans-serif';
+                ctx.fillText('U', ptU.x - 20 * Math.sin(radU) - 20, ptU.y - 20 * Math.cos(radU));
+                ctx.fillStyle = '#10b981';
+                ctx.fillText('I', ptI.x - 20 * Math.sin(radI) - 20, ptI.y - 20 * Math.cos(radI));
             } else {
                 ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 20px sans-serif';
                 ctx.fillText('（预测正确后显示）', cx, cy);
             }
 
-            const windowSize = 4 * Math.PI; 
+            const windowSize = 4 * Math.PI;
             const t_now = state.time;
 
             const drawWave = (phaseShift, color) => {
                 ctx.beginPath();
                 let drawingStarted = false;
                 for (let i = 0; i <= rightW; i++) {
-                    let t = (t_now < windowSize) 
-                        ? (i / rightW) * windowSize 
+                    let t = (t_now < windowSize)
+                        ? (i / rightW) * windowSize
                         : t_now - windowSize + (i / rightW) * windowSize;
-                    
-                    if (t > t_now) continue; 
-                    
-                    const val = Math.sin(t + phaseShift);
+                    if (t > t_now) continue;
+
+                    const val = Math.cos(t + phaseShift);
                     const x = rightStart + i;
                     const y = cy - val * 140;
-                    
+
                     if (!drawingStarted) {
                         ctx.moveTo(x, y);
                         drawingStarted = true;
@@ -533,28 +548,25 @@ function draw() {
                 ctx.strokeStyle = color; ctx.lineWidth = 4; ctx.stroke();
             };
 
-            drawWave(0, '#10b981'); 
-            drawWave(state.phi4 * Math.PI / 180, '#ef4444'); 
+            drawWave(0, '#10b981');
+            drawWave(state.phi4 * Math.PI / 180, '#ef4444');
         }
     } catch (err) {
         console.error("Draw error:", err);
     }
-    
+
     requestAnimationFrame(draw);
 }
 
-// 启动绘制
 requestAnimationFrame(draw);
 setTimeout(resize, 100);
-
-// ================== 全局函数供 onclick 调用 ==================
 
 window.switchTab = function(n) {
     state.step = n;
     document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
         btn.classList.toggle('active', idx + 1 === n);
     });
-    document.querySelectorAll('.card[id^="panel-"]').forEach((card, idx) => {
+    document.querySelectorAll('[id^="panel-"]').forEach((card, idx) => {
         card.style.display = (idx + 1 === n) ? 'block' : 'none';
     });
 
@@ -637,7 +649,7 @@ window.closeMicroPoe = function() {
 
 window.closePoe = function() {
     document.getElementById('poe-modal').classList.remove('active');
-    state.isPlaying = true; 
+    state.isPlaying = true;
     document.getElementById('btn-play').textContent = '⏸ 暂停旋转';
 }
 
@@ -672,9 +684,8 @@ window.checkMicroPoe = function(ans) {
 
 window.openPoe = function() {
     document.getElementById('poe-modal').classList.add('active');
-    state.isPlaying = false; 
+    state.isPlaying = false;
     document.getElementById('btn-play').textContent = '▶ 开始旋转';
-    
     document.querySelectorAll('#poe-options .opt-btn').forEach(btn => {
         btn.className = 'opt-btn';
     });
@@ -690,9 +701,9 @@ window.checkPoe = function(ans) {
     if (ans === 'lead') {
         btns[0].classList.add('correct');
         feedbackEl.style.background = 'var(--green)';
-        feedbackEl.innerHTML = '✅ <b>预测正确！</b><br>波形图上越靠左（先发生），在相量图上就越处于逆时针前方。';
+        feedbackEl.innerHTML = '✅ <b>预测正确！</b><br>波形图上越靠左（先发生），在逆时针旋转的相量图上就越处于逆时针前方。';
         feedbackEl.className = 'show';
-        
+
         setTimeout(() => {
             document.getElementById('poe-modal').classList.remove('active');
             state.poePassed = true;
@@ -700,7 +711,7 @@ window.checkPoe = function(ans) {
             document.getElementById('btn-play').textContent = '⏸ 暂停旋转';
         }, 1500);
     } else {
-        state.poeErrorCount++; 
+        state.poeErrorCount++;
         if (ans === 'lag') {
             btns[1].classList.add('wrong');
             feedbackEl.innerHTML = '❌ <b>方向反了！</b><br>红色波形在左侧，说明它先发生。在逆时针旋转的相量里，谁先发生谁就在前面。';
@@ -713,7 +724,7 @@ window.checkPoe = function(ans) {
 
         setTimeout(() => {
             btns.forEach(b => b.classList.remove('wrong'));
-        }, 800); 
+        }, 800);
     }
 }
 
@@ -732,7 +743,7 @@ window.buildReport = function() {
     const text = `【电路原理·相量法分步探究 学情数据】
 - 探究过程：
   1. 我明确了核心定义：相量是一个静止的复数 U̇ = Um ∠ φ，它冻结在 t=0 时刻。
-  2. 给相量乘上旋转因子后，变成了旋转矢量，它在纵轴上的投影就是时域的瞬时值。
+  2. 给相量乘上旋转因子后，变成了旋转矢量，它在实轴（垂直方向）上的投影就是时域的瞬时值。
   3. 我完成了超前/滞后的探究：当电压超前电流 90° 时，红色电压波形比绿色电流波形先到达峰值。
 - 探究记录：
   在 Step 2 微预测中，我经历了 ${state.microPoeErrorCount} 次失误。
@@ -744,7 +755,6 @@ window.buildReport = function() {
     ta.classList.add('show');
 }
 
-// 初始化页面状态
 window.onload = function() {
     switchTab(1);
     setTimeout(resize, 100);
