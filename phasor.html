@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>相量法 · 空间映射（余弦实轴垂直基准）</title>
+<style>
+:root{
+  --bg:#f4f7f6; --panel:#ffffff; --line:#e2e8f0; --text:#2c3e50;
+  --muted:#7f8c8d; --cyan:#0ea5e9; --amber:#f59e0b; --green:#10b981;
+  --pink:#ec4899; --violet:#8b5cf6; --gray:#94a3b8; --red:#ef4444;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg); color:var(--text); min-height:100vh; display:flex; justify-content:center; padding:24px 20px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1500px; width:100%;}
+header{display:flex;align-items:center;gap:20px;margin-bottom:24px}
+.logo{width:64px;height:64px;border-radius:16px;display:grid;place-items:center;font-size:32px;background:linear-gradient(135deg,#0ea5e9,#6366f1);box-shadow:0 8px 30px rgba(14,165,233,.3);color:#fff;}
+h1{font-size:32px;font-weight:700;letter-spacing:.5px}
+header p{color:var(--muted);font-size:18px;margin-top:6px}
+
+.tabs{display:flex;gap:12px;margin-bottom:24px}
+.tab-btn{
+  flex:1; padding:16px; border-radius:12px; border:2px solid var(--line);
+  background:#fff; color:var(--muted); font-size:18px; font-weight:bold; cursor:pointer; transition:.2s;
+}
+.tab-btn.active{background:rgba(14,165,233,.1); border-color:var(--cyan); color:var(--cyan)}
+.tab-btn:disabled{opacity:0.4; cursor:not-allowed;}
+
+.lab{display:grid;grid-template-columns:1fr 480px;gap:24px;align-items:start}
+@media(max-width:1100px){.lab{grid-template-columns:1fr}}
+
+.stage{
+  background:#ffffff; border:1px solid var(--line); border-radius:20px; padding:12px;
+  box-shadow:0 10px 30px -10px rgba(0,0,0,.05); position:relative; width:100%; height:584px;
+}
+canvas{display:block;width:100%;height:560px;border-radius:14px;}
+
+.play-bar {
+  position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+  display: none; gap: 12px; background: rgba(255,255,255,0.95); padding: 10px 20px;
+  border-radius: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid var(--line);
+}
+.play-bar button {
+  background: var(--cyan); color: #fff; border: none; border-radius: 10px;
+  padding: 10px 24px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s;
+}
+
+.card{
+  background:#ffffff; border:1px solid var(--line); border-radius:20px; padding:24px; margin-bottom:20px;
+  box-shadow:0 10px 30px -10px rgba(0,0,0,.05);
+}
+.card h3{font-size:24px;color:var(--cyan);margin-bottom:20px;border-bottom:2px solid rgba(14,165,233,.2);padding-bottom:12px;}
+
+.ctrl { margin-bottom: 24px; }
+.ctrl label { display: flex; justify-content: space-between; font-size: 18px; color: var(--text); margin-bottom: 10px; font-weight: bold; }
+.ctrl .val { color: var(--cyan); font-variant-numeric: tabular-nums; }
+input[type=range]{ -webkit-appearance:none;width:100%;height:10px;border-radius:5px;background:#e2e8f0;outline:none;cursor:pointer; }
+input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:5px solid var(--cyan);cursor:pointer; }
+
+.eq-box {
+  background: #f8fafc; border: 2px dashed var(--amber); border-radius: 14px; padding: 18px;
+  font-family: ui-monospace, Consolas, monospace; font-size: 18px; line-height: 1.8; margin-bottom: 20px;
+  text-align: center; color: #1e293b;
+}
+.eq-box .label { font-size: 15px; color: var(--muted); margin-bottom: 4px; font-family: sans-serif; }
+
+.physics-conclusion {
+  padding: 18px; background: rgba(16,185,129,.1); border-left: 6px solid var(--green);
+  border-radius: 8px; font-size: 16px; font-weight: bold; color: #047857; line-height: 1.7;
+}
+
+.modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10,15,28,.85);
+  backdrop-filter: blur(4px); display: none; place-items: center; z-index: 1000;
+}
+.modal-overlay.active { display: grid; }
+.modal {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 32px;
+  max-width: 520px; width: 90%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,.5);
+}
+.modal h4 { font-size: 24px; margin-bottom: 16px; color: var(--text); }
+.modal p { font-size: 18px; color: var(--text); margin-bottom: 20px; line-height: 1.6; }
+.modal .row { display: flex; flex-direction: column; gap: 12px; }
+.opt-btn {
+  border: 2px solid var(--line); background: #fff; color: var(--text);
+  padding: 16px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s;
+}
+.opt-btn:hover { background: #f1f5f9; }
+.opt-btn.correct { background: rgba(16,185,129,.15); border-color: var(--green); color: var(--green); }
+.opt-btn.wrong { background: rgba(236,72,153,.15); border-color: var(--pink); color: var(--pink); animation: shake .4s; }
+
+#poe-feedback, #micro-poe-feedback {
+  font-size: 15px; color: #fff; background: var(--pink); padding: 12px; border-radius: 8px;
+  margin-top: 16px; display: none; line-height: 1.5; text-align: left;
+}
+#poe-feedback.show, #micro-poe-feedback.show { display: block; animation: fadeIn .3s; }
+
+.btn{
+  border:1px solid var(--line); background:#fff; color:var(--text);
+  padding:16px 24px; border-radius:12px; cursor:pointer; font-size:18px; font-weight:bold; font-family:inherit; transition:.2s; width:100%;
+}
+.btn:hover{background:#f1f5f9;}
+.btn.locked { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+
+.toast {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.8); color: #fff; padding: 16px 24px; border-radius: 12px;
+  font-size: 18px; font-weight: bold; z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s;
+}
+.toast.show { opacity: 1; }
+
+textarea{
+  width:100%;margin-top:16px;font-family:ui-monospace,Consolas,monospace;font-size:16px;line-height:1.8;
+  background:#f8fafc;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:16px;resize:vertical; display:none;
+}
+textarea.show{display:block;}
+.warn-text {
+  color: #fff; font-size:16px; font-weight: 600; margin-top: 14px;
+  display: none; line-height: 1.5; text-align: center;
+  background: var(--pink); padding: 16px; border-radius: 10px;
+}
+.warn-text.show { display: block; animation: shake .4s; }
+@keyframes fadeIn { from{opacity:0; transform:translateY(5px)} to{opacity:1; transform:none} }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">🌊</div>
+    <div>
+      <h1>相量法 · 空间映射</h1>
+      <p>垂直实轴投影高度 = 瞬时值 | 本布局：实轴竖直向上，虚轴水平向右（电工相量专用映射，区别数学标准复平面）</p>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tab1" onclick="switchTab(1)">1. 静止相量</button>
+    <button class="tab-btn" id="tab2" onclick="switchTab(2)" disabled>2. 旋转矢量</button>
+    <button class="tab-btn" id="tab3" onclick="switchTab(3)" disabled>3. 动态投影</button>
+    <button class="tab-btn" id="tab4" onclick="switchTab(4)" disabled>4. 相位差</button>
+  </div>
+
+  <div class="lab">
+    <div class="stage" id="canvas-stage">
+      <canvas id="cv-phasor"></canvas>
+      <div class="play-bar" id="play-bar">
+        <button id="btn-play" onclick="togglePlay()">⏸ 暂停旋转</button>
+      </div>
+    </div>
+
+    <div>
+      <!-- Step 1 -->
+      <div class="card" id="panel-1" style="display:block;">
+        <h3>Step 1: 认识静止相量</h3>
+        <div class="ctrl">
+          <label>初相位角 φ <span class="val" id="val-phi1">30°</span></label>
+          <input type="range" id="slider-phi1" min="-180" max="180" step="15" value="30" oninput="onMoveStep1(this.value)">
+        </div>
+
+        <div class="eq-box">
+          <div class="label">相量（复数，静止于 t=0）</div>
+          <div style="font-size:22px; font-weight:bold; color:var(--cyan);">U̇ = U<sub>m</sub> ∠ φ</div>
+        </div>
+
+        <div class="physics-conclusion">
+          💡 <b>核心概念：</b><br>
+          复数是通用数学对象；<b>相量是专门用来表征正弦稳态量的特殊复数</b>，只保留幅值、初相，舍弃时间信息；<br>
+          旋转矢量是相量对应的动态几何模型：以角速度ω逆时针旋转；静止相量是旋转矢量在 t=0 时刻的快照。<br>
+          注意看：它在<b>实轴（垂直方向）上的投影高度</b>，正好等于 t=0 时的余弦瞬时值。
+        </div>
+        <button class="btn locked" id="btn-next-1" style="margin-top:20px;" onclick="checkMoveStep1()">请先拖动滑块</button>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="card" id="panel-2" style="display:none;">
+        <h3>Step 2: 乘上时间因子（旋转矢量）</h3>
+        <div class="ctrl">
+          <label>旋转角度 ωt <span class="val" id="val-angle2">0°</span></label>
+          <input type="range" id="slider-angle2" min="0" max="360" step="5" value="0" oninput="onMoveStep2(this.value)">
+        </div>
+
+        <div class="eq-box">
+          <div class="label">旋转矢量（随时间变化）</div>
+          <div style="font-size:22px; font-weight:bold; color:var(--cyan);">U̇(t) = U<sub>m</sub> ∠ (ωt + φ)</div>
+        </div>
+
+        <div class="physics-conclusion">
+          💡 给静止的相量（特殊复数）乘上旋转因子 e<sup>jωt</sup>，它就变成了一个<b>旋转矢量</b>。<br>
+          请拖动滑块，看看它在<b>实轴（垂直方向）上的投影高度</b>发生了什么变化？
+        </div>
+        <button class="btn locked" id="btn-next-2" style="margin-top:20px;" onclick="checkMoveStep2()">请先拖动滑块</button>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="card" id="panel-3" style="display:none;">
+        <h3>Step 3: 动态投影生成波形</h3>
+        <div class="physics-conclusion" style="margin-bottom:20px;">
+          💡 让旋转矢量自动逆时针转动。<br>
+          它在<b>实轴（垂直方向）上的投影高度</b>，随时间展开，就是右侧的<b>余弦波</b>。
+        </div>
+
+        <div class="eq-box">
+          <div class="label">瞬时值（实轴投影）</div>
+          <div style="font-size:22px; font-weight:bold; color:var(--cyan);">u(t) = U<sub>m</sub> · cos(ωt + φ)</div>
+        </div>
+
+        <div class="physics-conclusion">
+          注意观察：左侧矢量端点在实轴上的高度，与右侧波形前沿的高度，<b>永远在同一水平线上！</b>
+        </div>
+        <button class="btn" style="margin-top:20px;" onclick="unlockTab4()">完成观察，进入下一步</button>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="card" id="panel-4" style="display:none;">
+        <h3>Step 4: 波形反推相量（深度 POE）</h3>
+        <div class="physics-conclusion" style="margin-bottom:20px;">
+          💡 请观察右侧波形：<br>
+          <b>红色电压波形比绿色电流波形先到达波峰</b>（位于左侧）。
+        </div>
+
+        <div class="eq-box">
+          <div class="label">瞬时值方程</div>
+          <div style="font-size:18px;">u(t) = U<sub>m</sub> · cos(ωt + φ)</div>
+          <div style="font-size:18px;">i(t) = I<sub>m</sub> · cos(ωt)</div>
+        </div>
+
+        <div class="physics-conclusion">
+          💡 思考一下，此时在左侧的相量图中，红色（U）和绿色（I）的夹角应该是怎样的？
+        </div>
+        <button class="btn" id="btn-poe" style="margin-top:20px; background:var(--amber); color:#fff; border:none;" onclick="openPoe()">触发 POE 预测验证</button>
+      </div>
+
+      <div class="card">
+        <h3>学情记录</h3>
+        <button class="btn" onclick="buildReport()">生成学情数据</button>
+        <textarea id="report-text" rows="6" placeholder="完成探究后，生成数据发送给学习通"></textarea>
+        <div class="warn-text" id="warn-box"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Step 2 微预测弹窗 -->
+<div class="modal-overlay" id="micro-poe-modal">
+  <div class="modal">
+    <h4>🧐 停顿一下</h4>
+    <p>你刚刚拖动了滑块，请回想一下：<br>在相量旋转的过程中，<b>哪个物理量</b>发生了变化？</p>
+    <div class="row" id="micro-poe-options">
+      <button class="opt-btn" onclick="checkMicroPoe('length')">箭头的长度（幅值 U<sub>m</sub>）</button>
+      <button class="opt-btn" onclick="checkMicroPoe('angle')">箭头的角度（相位 ωt + φ）</button>
+    </div>
+    <div id="micro-poe-feedback"></div>
+    <button class="btn" style="margin-top:20px; background:#e2e8f0; color:var(--text); border:none;" onclick="closeMicroPoe()">🔙 返回重新观察</button>
+  </div>
+</div>
+
+<!-- Step 4 深度 POE 弹窗 -->
+<div class="modal-overlay" id="poe-modal">
+  <div class="modal">
+    <h4>🤔 预测一下（POE）</h4>
+    <p>已知示波器上：红色电压波形先于绿色电流波形到达波峰（向左平移）。<br>根据相量旋转规律，请预测左侧相量图中红绿箭头的相对位置：</p>
+    <div class="row" id="poe-options">
+      <button class="opt-btn" onclick="checkPoe('lead')">红色电压在逆时针前方（超前）</button>
+      <button class="opt-btn" onclick="checkPoe('lag')">绿色电流在逆时针前方（超前）</button>
+      <button class="opt-btn" onclick="checkPoe('same')">两者完全重合</button>
+    </div>
+    <div id="poe-feedback"></div>
+    <button class="btn" style="margin-top:20px; background:#e2e8f0; color:var(--text); border:none;" onclick="closePoe()">🔙 返回重新观察波形</button>
+  </div>
+</div>
+
+<!-- Toast 提示 -->
+<div class="toast" id="toast">请先拖动滑块观察变化！</div>
+
+<script>
+const cv = document.getElementById('cv-phasor');
+const ctx = cv.getContext('2d');
+let W = 800, H = 560;
+
+const state = {
+  step: 1,
+  isPlaying: false,
+  phi1: 30,
+  angle2: 0,
+  phi4: 90,
+  time: 0,
+  lastTime: performance.now(),
+  poePassed: false,
+  poeErrorCount: 0,
+  microPoePassed: false,
+  microPoeErrorCount: 0,
+  hasMovedStep1: false,
+  hasMovedStep2: false
+};
+
+function resize() {
+    const rect = document.getElementById('canvas-stage').getBoundingClientRect();
+    if (rect.width > 50) {
+        const dpr = window.devicePixelRatio || 1;
+        cv.width = rect.width * dpr;
+        cv.height = (rect.height - 24) * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        W = rect.width;
+        H = rect.height - 24;
+    }
+}
+window.addEventListener('resize', resize);
+setTimeout(resize, 100);
+
+function drawLine(x1, y1, x2, y2, color = '#cbd5e1', width = 2) {
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+    ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineCap = 'round'; ctx.stroke();
+}
+function drawArrow(x1, y1, x2, y2, color, width = 3) {
+    drawLine(x1, y1, x2, y2, color, width);
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    const headLen = 14;
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - headLen * Math.cos(angle - Math.PI/6), y2 - headLen * Math.sin(angle - Math.PI/6));
+    ctx.lineTo(x2 - headLen * Math.cos(angle + Math.PI/6), y2 - headLen * Math.sin(angle + Math.PI/6));
+    ctx.closePath();
+    ctx.fillStyle = color; ctx.fill();
+}
+
+function draw() {
+    try {
+        if (W < 100) {
+            resize();
+        }
+
+        ctx.clearRect(0, 0, W, H);
+        const now = performance.now();
+        const dt = (now - state.lastTime) / 1000;
+        state.lastTime = now;
+
+        if (state.isPlaying && state.step >= 3) {
+            state.time += dt * 0.8;
+        }
+
+        const cy = H / 2;
+        const leftW = Math.min(W * 0.4, 380);
+        const cx = leftW / 2;
+        const rightStart = leftW + 50;
+        const rightW = W - rightStart - 50;
+
+        // ======== 修改后：竖直向上 +1（实轴），水平向右 +j（虚轴） ========
+        drawLine(cx, cy - 200, cx, cy + 200, '#e2e8f0', 2); // 实轴 竖直
+        drawLine(cx - 180, cy, cx + 180, cy, '#e2e8f0', 2); // 虚轴 水平向右延伸
+
+        ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 20px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('复平面（复数域）', cx, 40);
+
+        ctx.fillStyle = '#cbd5e1'; ctx.font = '14px sans-serif';
+        ctx.fillText('+1（实轴，垂直向上）', cx + 40, cy - 180);
+        ctx.fillText('+j（虚轴，水平向右）', cx + 110, cy + 20);
+
+        if (state.step >= 2) {
+            ctx.strokeStyle = '#f1f5f9'; ctx.lineWidth = 2;
+            ctx.strokeRect(rightStart, cy - 200, rightW, 400);
+            drawLine(rightStart, cy, rightStart + rightW, cy, '#e2e8f0', 2);
+            ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 20px sans-serif';
+            ctx.fillText('时域波形（实数域）', rightStart + rightW/2, 40);
+        }
+
+        const radius = 140;
+
+        // 【核心修改】虚轴向右：x = cx + radius*sin(rad)
+        // 角度：从竖直向上(+实轴)逆时针为正
+        const getEndPoint = (rad) => {
+            return {
+                x: cx + radius * Math.sin(rad),
+                y: cy - radius * Math.cos(rad)
+            };
+        };
+
+        // =============== Step 1 ===============
+        if (state.step === 1) {
+            const rad = state.phi1 * Math.PI / 180;
+            const pt = getEndPoint(rad);
+
+            if (state.phi1 !== 0) {
+                ctx.beginPath();
+                // 圆弧：从竖直向上，逆时针转到rad
+                ctx.arc(cx, cy, 40, -Math.PI/2, -Math.PI/2 + rad, rad < 0);
+                ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.fillStyle = '#f59e0b'; ctx.font = 'bold 16px sans-serif';
+                ctx.fillText(`φ`, cx + 55 * Math.sin(rad/2) + 15, cy - 55 * Math.cos(rad/2));
+            }
+
+            // 实轴投影（竖直）
+            ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 5;
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, pt.y); ctx.stroke();
+
+            ctx.setLineDash([6, 6]);
+            drawLine(pt.x, pt.y, cx, pt.y, 'rgba(236,72,153,0.5)', 2);
+            ctx.setLineDash([]);
+
+            drawArrow(cx, cy, pt.x, pt.y, '#0ea5e9', 6);
+            ctx.fillStyle = '#0ea5e9'; ctx.font = 'bold 20px sans-serif';
+            ctx.fillText('Uₘ', cx + (radius/2)*Math.sin(rad) + 10, cy - (radius/2)*Math.cos(rad) - 10);
+
+            ctx.beginPath(); ctx.arc(cx, pt.y, 8, 0, Math.PI*2);
+            ctx.fillStyle = '#ec4899'; ctx.fill();
+
+            ctx.fillStyle = '#ec4899'; ctx.font = 'bold 20px sans-serif'; ctx.textAlign = 'left';
+            ctx.fillText(`实轴投影 = Uₘ·cos(${state.phi1}°)`, pt.x + 10, pt.y - 10);
+
+        // =============== Step 2 ===============
+        } else if (state.step === 2) {
+            const rad = state.angle2 * Math.PI / 180;
+            const pt = getEndPoint(rad);
+
+            drawArrow(cx, cy, pt.x, pt.y, '#0ea5e9', 6);
+            ctx.fillStyle = '#0ea5e9'; ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'left';
+            ctx.fillText('旋转矢量', pt.x + 10, pt.y - 10);
+
+            ctx.strokeStyle = 'rgba(236,72,153,0.5)'; ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, pt.y); ctx.stroke();
+
+            ctx.setLineDash([6, 6]);
+            drawLine(pt.x, pt.y, cx, pt.y, 'rgba(236,72,153,0.3)', 2);
+            const curPx = rightStart + (rad / (2 * Math.PI)) * rightW;
+            drawLine(cx, pt.y, curPx, pt.y, 'rgba(236,72,153,0.5)', 2);
+            ctx.setLineDash([]);
+
+            ctx.beginPath(); ctx.arc(cx, pt.y, 10, 0, Math.PI*2);
+            ctx.fillStyle = '#ec4899'; ctx.fill();
+
+            ctx.beginPath();
+            const steps = Math.floor(state.angle2 / 2);
+            for (let i = 0; i <= steps; i++) {
+                const a = (i * 2) * Math.PI / 180;
+                const x = rightStart + (a / (2 * Math.PI)) * rightW;
+                const y = cy - Math.cos(a) * 140;
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 5; ctx.stroke();
+
+            const curPy = cy - Math.cos(rad) * 140;
+            ctx.beginPath(); ctx.arc(curPx, curPy, 10, 0, Math.PI*2);
+            ctx.fillStyle = '#ec4899'; ctx.fill();
+            ctx.fillStyle = '#ec4899'; ctx.font = 'bold 18px sans-serif';
+            ctx.fillText('瞬时值', curPx + 15, curPy - 10);
+
+        // =============== Step 3 ===============
+        } else if (state.step === 3) {
+            const rad = state.time;
+            const pt = getEndPoint(rad);
+
+            drawArrow(cx, cy, pt.x, pt.y, '#0ea5e9', 6);
+            ctx.fillStyle = '#0ea5e9'; ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'left';
+            ctx.fillText('旋转矢量', pt.x + 10, pt.y - 10);
+
+            ctx.strokeStyle = 'rgba(236,72,153,0.5)'; ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, pt.y); ctx.stroke();
+            ctx.setLineDash([6, 6]);
+            drawLine(pt.x, pt.y, cx, pt.y, 'rgba(236,72,153,0.3)', 2);
+            ctx.setLineDash([]);
+
+            ctx.beginPath(); ctx.arc(cx, pt.y, 10, 0, Math.PI*2);
+            ctx.fillStyle = '#ec4899'; ctx.fill();
+
+            const windowSize = 4 * Math.PI;
+            const t_now = state.time;
+
+            ctx.beginPath();
+            let drawingStarted = false;
+            for (let i = 0; i <= rightW; i++) {
+                let t = (t_now < windowSize)
+                    ? (i / rightW) * windowSize
+                    : t_now - windowSize + (i / rightW) * windowSize;
+                if (t > t_now) continue;
+
+                const val = Math.cos(t);
+                const x = rightStart + i;
+                const y = cy - val * 140;
+
+                if (!drawingStarted) {
+                    ctx.moveTo(x, y);
+                    drawingStarted = true;
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 5; ctx.stroke();
+
+            const scanX = (t_now < windowSize) ? rightStart + (t_now / windowSize) * rightW : rightStart + rightW;
+            const scanY = cy - Math.cos(t_now) * 140;
+
+            ctx.setLineDash([6, 6]);
+            drawLine(cx, pt.y, scanX, scanY, 'rgba(236,72,153,0.4)', 2);
+            ctx.setLineDash([]);
+
+            ctx.beginPath(); ctx.arc(scanX, scanY, 10, 0, Math.PI*2);
+            ctx.fillStyle = '#ec4899'; ctx.fill();
+            ctx.fillStyle = '#ec4899'; ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'right';
+            ctx.fillText('瞬时值 u(t)', scanX - 15, scanY - 15);
+
+        // =============== Step 4 ===============
+        } else if (state.step === 4) {
+            const radI = state.time;
+            const radU = state.time + state.phi4 * Math.PI / 180;
+
+            const ptI = getEndPoint(radI);
+            const ptU = getEndPoint(radU);
+
+            if (state.poePassed) {
+                drawArrow(cx, cy, ptI.x, ptI.y, '#10b981', 6);
+                drawArrow(cx, cy, ptU.x, ptU.y, '#ef4444', 6);
+
+                ctx.fillStyle = '#ef4444'; ctx.font = 'bold 18px sans-serif';
+                ctx.fillText('U', ptU.x + 20 * Math.sin(radU) + 10, ptU.y - 20 * Math.cos(radU));
+                ctx.fillStyle = '#10b981';
+                ctx.fillText('I', ptI.x + 20 * Math.sin(radI) + 10, ptI.y - 20 * Math.cos(radI));
+            } else {
+                ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 20px sans-serif';
+                ctx.fillText('（预测正确后显示）', cx, cy);
+            }
+
+            const windowSize = 4 * Math.PI;
+            const t_now = state.time;
+
+            const drawWave = (phaseShift, color) => {
+                ctx.beginPath();
+                let drawingStarted = false;
+                for (let i = 0; i <= rightW; i++) {
+                    let t = (t_now < windowSize)
+                        ? (i / rightW) * windowSize
+                        : t_now - windowSize + (i / rightW) * windowSize;
+                    if (t > t_now) continue;
+
+                    const val = Math.cos(t + phaseShift);
+                    const x = rightStart + i;
+                    const y = cy - val * 140;
+
+                    if (!drawingStarted) {
+                        ctx.moveTo(x, y);
+                        drawingStarted = true;
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.strokeStyle = color; ctx.lineWidth = 4; ctx.stroke();
+            };
+
+            drawWave(0, '#10b981');
+            drawWave(state.phi4 * Math.PI / 180, '#ef4444');
+        }
+    } catch (err) {
+        console.error("Draw error:", err);
+    }
+
+    requestAnimationFrame(draw);
+}
+
+requestAnimationFrame(draw);
+setTimeout(resize, 100);
+
+window.switchTab = function(n) {
+    state.step = n;
+    document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', idx + 1 === n);
+    });
+    document.querySelectorAll('[id^="panel-"]').forEach((card, idx) => {
+        card.style.display = (idx + 1 === n) ? 'block' : 'none';
+    });
+
+    if (n >= 3) {
+        document.getElementById('play-bar').style.display = 'flex';
+        if (!state.isPlaying) {
+            state.isPlaying = true;
+            document.getElementById('btn-play').textContent = '⏸ 暂停旋转';
+        }
+    } else {
+        document.getElementById('play-bar').style.display = 'none';
+        state.isPlaying = false;
+    }
+}
+
+window.togglePlay = function() {
+    state.isPlaying = !state.isPlaying;
+    document.getElementById('btn-play').textContent = state.isPlaying ? '⏸ 暂停旋转' : '▶ 开始旋转';
+}
+
+window.onMoveStep1 = function(val) {
+    state.phi1 = parseInt(val);
+    document.getElementById('val-phi1').textContent = state.phi1 + '°';
+    if (!state.hasMovedStep1) {
+        state.hasMovedStep1 = true;
+        const btn = document.getElementById('btn-next-1');
+        btn.classList.remove('locked');
+        btn.textContent = '完成观察，进入下一步';
+    }
+}
+
+window.onMoveStep2 = function(val) {
+    state.angle2 = parseInt(val);
+    document.getElementById('val-angle2').textContent = state.angle2 + '°';
+    if (!state.hasMovedStep2 && state.angle2 > 0) {
+        state.hasMovedStep2 = true;
+        const btn = document.getElementById('btn-next-2');
+        btn.classList.remove('locked');
+        btn.textContent = '完成观察，进入下一步';
+    }
+}
+
+window.showToast = function() {
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+window.checkMoveStep1 = function() {
+    if (!state.hasMovedStep1) {
+        showToast();
+    } else {
+        document.getElementById('tab2').disabled = false;
+        switchTab(2);
+    }
+}
+
+window.checkMoveStep2 = function() {
+    if (!state.hasMovedStep2) {
+        showToast();
+    } else if (!state.microPoePassed) {
+        document.getElementById('micro-poe-modal').classList.add('active');
+        state.isPlaying = false;
+    } else {
+        document.getElementById('tab3').disabled = false;
+        switchTab(3);
+    }
+}
+
+window.unlockTab4 = function() {
+    document.getElementById('tab4').disabled = false;
+    switchTab(4);
+    state.isPlaying = true;
+    document.getElementById('btn-play').textContent = '⏸ 暂停旋转';
+}
+
+window.closeMicroPoe = function() {
+    document.getElementById('micro-poe-modal').classList.remove('active');
+}
+
+window.closePoe = function() {
+    document.getElementById('poe-modal').classList.remove('active');
+    state.isPlaying = true;
+    document.getElementById('btn-play').textContent = '⏸ 暂停旋转';
+}
+
+window.checkMicroPoe = function(ans) {
+    const fb = document.getElementById('micro-poe-feedback');
+    const btns = document.querySelectorAll('#micro-poe-options .opt-btn');
+
+    if (ans === 'angle') {
+        btns[1].classList.add('correct');
+        fb.style.background = 'var(--green)';
+        fb.innerHTML = '✅ 正确！长度自始至终都没变，只是角度转了。';
+        fb.className = 'show';
+
+        setTimeout(() => {
+            document.getElementById('micro-poe-modal').classList.remove('active');
+            state.microPoePassed = true;
+            document.getElementById('tab3').disabled = false;
+            switchTab(3);
+        }, 1200);
+    } else {
+        state.microPoeErrorCount++;
+        btns[0].classList.add('wrong');
+        fb.style.background = 'var(--pink)';
+        fb.innerHTML = '❌ 长度变了吗？请返回去重新拖动滑块，仔细看看箭头的长短。';
+        fb.className = 'show';
+
+        setTimeout(() => {
+            btns[0].classList.remove('wrong');
+        }, 800);
+    }
+}
+
+window.openPoe = function() {
+    document.getElementById('poe-modal').classList.add('active');
+    state.isPlaying = false;
+    document.getElementById('btn-play').textContent = '▶ 开始旋转';
+    document.querySelectorAll('#poe-options .opt-btn').forEach(btn => {
+        btn.className = 'opt-btn';
+    });
+    document.getElementById('poe-feedback').className = '';
+    document.getElementById('poe-feedback').textContent = '';
+}
+
+window.checkPoe = function(ans) {
+    if (state.poePassed) return;
+    const feedbackEl = document.getElementById('poe-feedback');
+    const btns = document.querySelectorAll('#poe-options .opt-btn');
+
+    if (ans === 'lead') {
+        btns[0].classList.add('correct');
+        feedbackEl.style.background = 'var(--green)';
+        feedbackEl.innerHTML = '✅ <b>预测正确！</b><br>波形图上越靠左（先发生），在逆时针旋转的相量图上就越处于逆时针前方。';
+        feedbackEl.className = 'show';
+
+        setTimeout(() => {
+            document.getElementById('poe-modal').classList.remove('active');
+            state.poePassed = true;
+            state.isPlaying = true;
+            document.getElementById('btn-play').textContent = '⏸ 暂停旋转';
+        }, 1500);
+    } else {
+        state.poeErrorCount++;
+        if (ans === 'lag') {
+            btns[1].classList.add('wrong');
+            feedbackEl.innerHTML = '❌ <b>方向反了！</b><br>红色波形在左侧，说明它先发生。在逆时针旋转的相量里，谁先发生谁就在前面。';
+        } else {
+            btns[2].classList.add('wrong');
+            feedbackEl.innerHTML = '❌ <b>两者重合？</b><br>如果重合，它们应该同时到达波峰，波形图会完全对齐。但图上错开了。';
+        }
+        feedbackEl.style.background = 'var(--pink)';
+        feedbackEl.className = 'show';
+
+        setTimeout(() => {
+            btns.forEach(b => b.classList.remove('wrong'));
+        }, 800);
+    }
+}
+
+window.buildReport = function() {
+    const warnBox = document.getElementById('warn-box');
+    const ta = document.getElementById('report-text');
+
+    if (!state.poePassed) {
+        ta.classList.remove('show');
+        warnBox.innerHTML = '❌ 拦截：请先在 Step 4 完成并答对 POE 预测题目！';
+        warnBox.classList.add('show');
+        return;
+    }
+
+    warnBox.classList.remove('show');
+    const text = `【电路原理·相量法分步探究 学情数据】
+- 探究过程：
+  1. 我明确了核心定义：复数是通用数学对象；相量是专门表征正弦稳态量的特殊复数，U̇ = Um ∠ φ，冻结在 t=0 时刻。
+  2. 给相量（特殊复数）乘上旋转因子 e<sup>jωt</sup>后，变成了旋转矢量，它在实轴（垂直方向）上的投影就是时域的瞬时值。
+  3. 我完成了超前/滞后的探究：当电压超前电流 90° 时，红色电压波形比绿色电流波形先到达峰值。
+- 探究记录：
+  在 Step 2 微预测中，我经历了 ${state.microPoeErrorCount} 次失误。
+  在 Step 4 深度 POE（波形反推相量）中，我经历了 ${state.poeErrorCount} 次失误。
+- 结论：
+  静止相量（特殊复数）的夹角，严格等于时域波形在时间轴上平移的时间差。`;
+
+    ta.value = text;
+    ta.classList.add('show');
+}
+
+window.onload = function() {
+    switchTab(1);
+    setTimeout(resize, 100);
+}
+</script>
+</body>
+</html>
