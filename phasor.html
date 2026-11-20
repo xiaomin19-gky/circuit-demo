@@ -413,7 +413,7 @@ function drawLine(x1, y1, x2, y2, color = '#cbd5e1', width = 2) {
 function drawArrow(x1, y1, x2, y2, color, width = 3) {
     drawLine(x1, y1, x2, y2, color, width);
     const angle = Math.atan2(y2 - y1, x2 - x1);
-    const headLen = 14;
+    const headLen = 10;
     ctx.beginPath();
     ctx.moveTo(x2, y2);
     ctx.lineTo(x2 - headLen * Math.cos(angle - Math.PI/6), y2 - headLen * Math.sin(angle - Math.PI/6));
@@ -500,19 +500,19 @@ function render(now) {
                 const arcR = Math.min(40, maxR * 0.35);
                 ctx.beginPath();
                 ctx.arc(cx, cy, arcR, -Math.PI / 2, -Math.PI / 2 + rad, rad < 0);
-                ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 1.5; ctx.stroke();
                 ctx.fillStyle = '#f59e0b'; ctx.font = 'bold 16px sans-serif'; ctx.textAlign = 'center';
                 ctx.fillText('φ', cx + (arcR + 14) * Math.sin(rad / 2), cy - (arcR + 14) * Math.cos(rad / 2) + 4);
             }
 
-            ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 5;
+            ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 2.5;
             ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, pt.y); ctx.stroke();
 
             ctx.setLineDash([6, 6]);
-            drawLine(pt.x, pt.y, cx, pt.y, 'rgba(236,72,153,0.5)', 2);
+            drawLine(pt.x, pt.y, cx, pt.y, 'rgba(236,72,153,0.5)', 1.5);
             ctx.setLineDash([]);
 
-            drawArrow(cx, cy, pt.x, pt.y, '#0ea5e9', 6);
+            drawArrow(cx, cy, pt.x, pt.y, '#0ea5e9', 3.5);
             ctx.fillStyle = '#0ea5e9'; ctx.font = `bold ${narrow ? 14 : 20}px sans-serif`; ctx.textAlign = 'left';
             ctx.fillText('Uₘ', cx + (r / 2) * Math.sin(rad) + 8, cy - (r / 2) * Math.cos(rad) - 8);
 
@@ -528,17 +528,17 @@ function render(now) {
             const r = rp(state.amp1);
             const pt = getEndPoint(rad, r);
 
-            drawArrow(cx, cy, pt.x, pt.y, '#0ea5e9', 6);
+            drawArrow(cx, cy, pt.x, pt.y, '#0ea5e9', 3.5);
             ctx.fillStyle = '#0ea5e9'; ctx.font = `bold ${narrow ? 13 : 18}px sans-serif`; ctx.textAlign = 'left';
             ctx.fillText('旋转矢量', pt.x + 8, pt.y - 8);
 
-            ctx.strokeStyle = 'rgba(236,72,153,0.5)'; ctx.lineWidth = 4;
+            ctx.strokeStyle = 'rgba(236,72,153,0.5)'; ctx.lineWidth = 2.5;
             ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, pt.y); ctx.stroke();
 
             ctx.setLineDash([6, 6]);
-            drawLine(pt.x, pt.y, cx, pt.y, 'rgba(236,72,153,0.3)', 2);
+            drawLine(pt.x, pt.y, cx, pt.y, 'rgba(236,72,153,0.3)', 1.5);
             const curPx = rightStart + (rad / (2 * Math.PI)) * rightW;
-            drawLine(cx, pt.y, curPx, pt.y, 'rgba(236,72,153,0.5)', 2);
+            drawLine(cx, pt.y, curPx, pt.y, 'rgba(236,72,153,0.5)', 1.5);
             ctx.setLineDash([]);
 
             ctx.beginPath(); ctx.arc(cx, pt.y, narrow ? 7 : 10, 0, Math.PI * 2);
@@ -552,7 +552,7 @@ function render(now) {
                 const y = cy - waveFunc(a, 0) * r;
                 if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
             }
-            ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 5; ctx.stroke();
+            ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 2.5; ctx.stroke();
 
             const curPy = cy - waveFunc(rad, 0) * r;
             ctx.beginPath(); ctx.arc(curPx, curPy, narrow ? 7 : 10, 0, Math.PI * 2);
@@ -568,14 +568,14 @@ function render(now) {
             const r = rp(state.amp3);
             const pt = getEndPoint(rad, r);
 
-            drawArrow(cx, cy, pt.x, pt.y, '#0ea5e9', 6);
+            drawArrow(cx, cy, pt.x, pt.y, '#0ea5e9', 3.5);
             ctx.fillStyle = '#0ea5e9'; ctx.font = `bold ${narrow ? 13 : 18}px sans-serif`; ctx.textAlign = 'left';
             ctx.fillText('旋转矢量', pt.x + 8, pt.y - 8);
 
-            ctx.strokeStyle = 'rgba(236,72,153,0.5)'; ctx.lineWidth = 4;
+            ctx.strokeStyle = 'rgba(236,72,153,0.5)'; ctx.lineWidth = 2.5;
             ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, pt.y); ctx.stroke();
             ctx.setLineDash([6, 6]);
-            drawLine(pt.x, pt.y, cx, pt.y, 'rgba(236,72,153,0.3)', 2);
+            drawLine(pt.x, pt.y, cx, pt.y, 'rgba(236,72,153,0.3)', 1.5);
             ctx.setLineDash([]);
 
             ctx.beginPath(); ctx.arc(cx, pt.y, narrow ? 7 : 10, 0, Math.PI * 2);
@@ -589,14 +589,14 @@ function render(now) {
                 const y = cy - val * r;
                 if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
             }
-            ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 5; ctx.stroke();
+            ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 2.5; ctx.stroke();
 
             const tNow = state.time3;
             const scanX = rightStart + (tNow / totalT) * rightW;
             const scanY = cy - waveFunc(tNow, phi3Rad) * r;
 
             ctx.setLineDash([6, 6]);
-            drawLine(cx, pt.y, scanX, scanY, 'rgba(236,72,153,0.4)', 2);
+            drawLine(cx, pt.y, scanX, scanY, 'rgba(236,72,153,0.4)', 1.5);
             ctx.setLineDash([]);
 
             ctx.beginPath(); ctx.arc(scanX, scanY, narrow ? 7 : 10, 0, Math.PI * 2);
@@ -615,8 +615,8 @@ function render(now) {
             const ptU = getEndPoint(radU, rU);
 
             if (state.poePassed) {
-                drawArrow(cx, cy, ptI.x, ptI.y, '#10b981', 6);
-                drawArrow(cx, cy, ptU.x, ptU.y, '#ef4444', 6);
+                drawArrow(cx, cy, ptI.x, ptI.y, '#10b981', 3.5);
+                drawArrow(cx, cy, ptU.x, ptU.y, '#ef4444', 3.5);
 
                 ctx.fillStyle = '#ef4444'; ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'left';
                 ctx.fillText('U', ptU.x + 20 * Math.sin(radU) + 10, ptU.y - 20 * Math.cos(radU));
@@ -644,7 +644,7 @@ function render(now) {
                     if (!started) { ctx.moveTo(x, y); started = true; }
                     else ctx.lineTo(x, y);
                 }
-                ctx.strokeStyle = color; ctx.lineWidth = 4; ctx.stroke();
+                ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.stroke();
             };
 
             drawWave(0, '#10b981');
