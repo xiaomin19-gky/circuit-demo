@@ -37,7 +37,7 @@ header p{color:var(--muted);font-size:18px;margin-top:6px}
   background:#ffffff; border:1px solid var(--line); border-radius:20px; padding:12px;
   box-shadow:0 10px 30px -10px rgba(0,0,0,.05); position:relative; width:100%; height:584px;
 }
-canvas{display:block;width:100%;height:560px;border-radius:14px;}
+canvas{display:block;width:100%;height:560px;border-radius:14px; touch-action:none;}
 
 .play-bar {
   position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
@@ -58,8 +58,12 @@ canvas{display:block;width:100%;height:560px;border-radius:14px;}
 .ctrl { margin-bottom: 24px; }
 .ctrl label { display: flex; justify-content: space-between; font-size: 18px; color: var(--text); margin-bottom: 10px; font-weight: bold; }
 .ctrl .val { color: var(--cyan); font-variant-numeric: tabular-nums; }
-input[type=range]{ -webkit-appearance:none;width:100%;height:10px;border-radius:5px;background:#e2e8f0;outline:none;cursor:pointer; }
-input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:5px solid var(--cyan);cursor:pointer; }
+/* 移动端优化滑块高度，方便手指点击 */
+input[type=range]{ -webkit-appearance:none;width:100%;height:22px;border-radius:5px;background:#e2e8f0;outline:none;cursor:pointer; }
+input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:#fff;border:5px solid var(--cyan);cursor:pointer; }
+.ctrl-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.ctrl-row button{padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:16px;}
+.ctrl-row button.active{background:var(--cyan);color:#fff;border-color:var(--cyan);}
 
 .eq-box {
   background: #f8fafc; border: 2px dashed var(--amber); border-radius: 14px; padding: 18px;
@@ -105,6 +109,7 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none;width:24px;heig
 }
 .btn:hover{background:#f1f5f9;}
 .btn.locked { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+.btn.primary{background:var(--cyan);color:#fff;border:none;}
 
 .toast {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -114,10 +119,10 @@ input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none;width:24px;heig
 .toast.show { opacity: 1; }
 
 textarea{
-  width:100%;margin-top:16px;font-family:ui-monospace,Consolas,monospace;font-size:16px;line-height:1.8;
-  background:#f8fafc;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:16px;resize:vertical; display:none;
+  width:100%;margin-top:12px;font-family:ui-monospace,Consolas,monospace;font-size:16px;line-height:1.8;
+  background:#f8fafc;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:16px;resize:vertical;
 }
-textarea.show{display:block;}
+.small-textarea{font-size:15px;padding:12px;min-height:80px;}
 .warn-text {
   color: #fff; font-size:16px; font-weight: 600; margin-top: 14px;
   display: none; line-height: 1.5; text-align: center;
@@ -142,7 +147,7 @@ textarea.show{display:block;}
     <button class="tab-btn active" id="tab1" onclick="switchTab(1)">1. 静止相量</button>
     <button class="tab-btn" id="tab2" onclick="switchTab(2)" disabled>2. 旋转矢量</button>
     <button class="tab-btn" id="tab3" onclick="switchTab(3)" disabled>3. 动态投影</button>
-    <button class="tab-btn" id="tab4" onclick="switchTab(4)" disabled>4. 相位差</button>
+    <button class="tab-btn" id="tab4" onclick="switchTab(4)" disabled>4. 相位差 POE</button>
   </div>
 
   <div class="lab">
@@ -158,8 +163,12 @@ textarea.show{display:block;}
       <div class="card" id="panel-1" style="display:block;">
         <h3>Step 1: 认识静止相量</h3>
         <div class="ctrl">
+          <label>幅值 Uₘ <span class="val" id="val-amp1">140</span></label>
+          <input type="range" id="slider-amp1" min="20" max="180" step="1" value="140" oninput="onMoveStep1()">
+        </div>
+        <div class="ctrl">
           <label>初相位角 φ <span class="val" id="val-phi1">30°</span></label>
-          <input type="range" id="slider-phi1" min="-180" max="180" step="15" value="30" oninput="onMoveStep1(this.value)">
+          <input type="range" id="slider-phi1" min="-180" max="180" step="15" value="30" oninput="onMoveStep1()">
         </div>
 
         <div class="eq-box">
@@ -196,19 +205,30 @@ textarea.show{display:block;}
         <button class="btn locked" id="btn-next-2" style="margin-top:20px;" onclick="checkMoveStep2()">请先拖动滑块</button>
       </div>
 
-      <!-- Step 3 -->
+      <!-- Step 3【方案A：固定时间轴，t=0在橙色线】 -->
       <div class="card" id="panel-3" style="display:none;">
         <h3>Step 3: 动态投影生成波形</h3>
-        <div class="physics-conclusion" style="margin-bottom:20px;">
-          💡 让旋转矢量自动逆时针转动。<br>
-          它在<b>实轴（垂直方向）上的投影高度</b>，随时间展开，就是右侧的<b>余弦波</b>。
+        <div class="ctrl">
+          <label>幅值 Uₘ <span class="val" id="val-amp3">140</span></label>
+          <input type="range" id="slider-amp3" min="20" max="180" step="1" value="140" oninput="onMoveStep3()">
         </div>
-
+        <div class="ctrl">
+          <label>初相位角 φ <span class="val" id="val-phi3">30°</span></label>
+          <input type="range" id="slider-phi3" min="-180" max="180" step="15" value="30" oninput="onMoveStep3()">
+        </div>
+        <div class="ctrl-row">
+          <button id="btn-cos" class="active" onclick="switchBase('cos')">基准：cos</button>
+          <button id="btn-sin" onclick="switchBase('sin')">基准：sin</button>
+        </div>
         <div class="eq-box">
           <div class="label">瞬时值（实轴投影）</div>
           <div style="font-size:22px; font-weight:bold; color:var(--cyan);">u(t) = U<sub>m</sub> · cos(ωt + φ)</div>
         </div>
-
+        <div class="physics-conclusion">
+          💡 让旋转矢量自动逆时针转动。<br>
+          拖动上方滑块改变幅值、初相位：幅值改变波形高低；初相位改变波形左右平移。<br>
+          它在<b>实轴（垂直方向）上的投影高度</b>，随时间展开，就是右侧的<b>余弦波</b>。
+        </div>
         <div class="physics-conclusion">
           注意观察：左侧矢量端点在实轴上的高度，与右侧波形前沿的高度，<b>永远在同一水平线上！</b>
         </div>
@@ -218,6 +238,9 @@ textarea.show{display:block;}
       <!-- Step 4 -->
       <div class="card" id="panel-4" style="display:none;">
         <h3>Step 4: 波形反推相量（深度 POE）</h3>
+        <div class="ctrl-row">
+          <button id="btn-t0-show" class="active" onclick="toggleT0Line()">显示 t=0 参考线</button>
+        </div>
         <div class="physics-conclusion" style="margin-bottom:20px;">
           💡 请观察右侧波形：<br>
           <b>红色电压波形比绿色电流波形先到达波峰</b>（位于左侧）。
@@ -235,10 +258,20 @@ textarea.show{display:block;}
         <button class="btn" id="btn-poe" style="margin-top:20px; background:var(--amber); color:#fff; border:none;" onclick="openPoe()">触发 POE 预测验证</button>
       </div>
 
+      <!-- 学情模块（改造重点） -->
       <div class="card">
-        <h3>学情记录</h3>
-        <button class="btn" onclick="buildReport()">生成学情数据</button>
-        <textarea id="report-text" rows="6" placeholder="完成探究后，生成数据发送给学习通"></textarea>
+        <h3>学情记录与导出</h3>
+        <label>写下你的探究结论：</label>
+        <textarea id="input-conclusion" class="small-textarea" placeholder="写下你自己得到的结论，例如：静止相量的夹角严格等于时域波形平移的时间差"></textarea>
+        <label>写下你的疑惑点：</label>
+        <textarea id="input-doubt" class="small-textarea" placeholder="写下你探究时的疑问，AI助教优先针对这个提问"></textarea>
+
+        <div style="display:flex;gap:12px;margin-top:16px;">
+          <button class="btn primary" onclick="buildReport()">生成学情文本</button>
+          <button class="btn" onclick="copyReport()">一键复制学情</button>
+          <button class="btn" onclick="saveSnapshot()">保存探究快照</button>
+        </div>
+        <textarea id="report-text" rows="7" placeholder="完成探究后生成学情，粘贴到AI苏格拉底助教对话框"></textarea>
         <div class="warn-text" id="warn-box"></div>
       </div>
     </div>
@@ -280,23 +313,39 @@ textarea.show{display:block;}
 <script>
 const cv = document.getElementById('cv-phasor');
 const ctx = cv.getContext('2d');
-let W = 800, H = 560;
+let W = 700, H = 560;
+
+// 生成唯一会话ID（防抄袭）
+const SESSION_ID = "PL-" + new Date().toISOString().slice(0,10).replaceAll("-","") + "-" + Math.random().toString(16).slice(2,8).toUpperCase();
 
 const state = {
   step: 1,
   isPlaying: false,
   phi1: 30,
+  amp1: 140,
   angle2: 0,
   phi4: 90,
+  // Step3独立参数
+  amp3: 140,
+  phi3: 30,
   time: 0,
+  time3: 0, // Step3独立时间，循环播放
   lastTime: performance.now(),
   poePassed: false,
   poeErrorCount: 0,
   microPoePassed: false,
   microPoeErrorCount: 0,
   hasMovedStep1: false,
-  hasMovedStep2: false
+  hasMovedStep2: false,
+  showT0Line: true,
+  baseFunc: "cos",
+  opLog: []
 };
+
+// 记录操作日志
+function logOp(msg){
+  state.opLog.push({t:new Date().toLocaleTimeString(), msg})
+}
 
 function resize() {
     const rect = document.getElementById('canvas-stage').getBoundingClientRect();
@@ -310,7 +359,9 @@ function resize() {
     }
 }
 window.addEventListener('resize', resize);
-setTimeout(resize, 100);
+resize();
+setTimeout(resize, 150);
+setTimeout(resize, 300);
 
 function drawLine(x1, y1, x2, y2, color = '#cbd5e1', width = 2) {
     ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
@@ -341,6 +392,12 @@ function draw() {
 
         if (state.isPlaying && state.step >= 3) {
             state.time += dt * 0.8;
+            // Step3独立时间循环：0 ~ 4π
+            if(state.step === 3){
+                state.time3 += dt * 0.8;
+                const totalT = 4 * Math.PI;
+                if(state.time3 > totalT) state.time3 = 0;
+            }
         }
 
         const cy = H / 2;
@@ -363,26 +420,33 @@ function draw() {
         if (state.step >= 2) {
             ctx.strokeStyle = '#f1f5f9'; ctx.lineWidth = 2;
             ctx.strokeRect(rightStart, cy - 200, rightW, 400);
+            if(state.showT0Line){
+                drawLine(rightStart, cy - 200, rightStart, cy + 200, '#f59e0b', 2);
+                ctx.fillStyle='#f59e0b';ctx.font='bold 14px sans-serif';ctx.fillText('t=0', rightStart+4, cy-185);
+            }
             drawLine(rightStart, cy, rightStart + rightW, cy, '#e2e8f0', 2);
             ctx.fillStyle = '#94a3b8'; ctx.font = 'bold 20px sans-serif';
             ctx.fillText('时域波形（实数域）', rightStart + rightW/2, 40);
         }
 
-        const radius = 140;
-
         // 【核心修改】虚轴向右：x = cx + radius*sin(rad)
         // 角度：从竖直向上(+实轴)逆时针为正
-        const getEndPoint = (rad) => {
+        const getEndPoint = (rad, r) => {
             return {
-                x: cx + radius * Math.sin(rad),
-                y: cy - radius * Math.cos(rad)
+                x: cx + r * Math.sin(rad),
+                y: cy - r * Math.cos(rad)
             };
         };
+        const waveFunc = (t, phase)=>{
+            if(state.baseFunc === 'cos') return Math.cos(t + phase);
+            else return Math.sin(t + phase);
+        }
 
         // =============== Step 1 ===============
         if (state.step === 1) {
             const rad = state.phi1 * Math.PI / 180;
-            const pt = getEndPoint(rad);
+            const radius = state.amp1;
+            const pt = getEndPoint(rad, radius);
 
             if (state.phi1 !== 0) {
                 ctx.beginPath();
@@ -414,7 +478,8 @@ function draw() {
         // =============== Step 2 ===============
         } else if (state.step === 2) {
             const rad = state.angle2 * Math.PI / 180;
-            const pt = getEndPoint(rad);
+            const radius = state.amp1;
+            const pt = getEndPoint(rad, radius);
 
             drawArrow(cx, cy, pt.x, pt.y, '#0ea5e9', 6);
             ctx.fillStyle = '#0ea5e9'; ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'left';
@@ -437,21 +502,24 @@ function draw() {
             for (let i = 0; i <= steps; i++) {
                 const a = (i * 2) * Math.PI / 180;
                 const x = rightStart + (a / (2 * Math.PI)) * rightW;
-                const y = cy - Math.cos(a) * 140;
+                const y = cy - waveFunc(a,0) * state.amp1;
                 if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
             }
             ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 5; ctx.stroke();
 
-            const curPy = cy - Math.cos(rad) * 140;
+            const curPy = cy - waveFunc(rad,0) * state.amp1;
             ctx.beginPath(); ctx.arc(curPx, curPy, 10, 0, Math.PI*2);
             ctx.fillStyle = '#ec4899'; ctx.fill();
             ctx.fillStyle = '#ec4899'; ctx.font = 'bold 18px sans-serif';
             ctx.fillText('瞬时值', curPx + 15, curPy - 10);
 
-        // =============== Step 3 ===============
+        // =============== Step 3【方案A：固定时间轴 0~4π】 ===============
         } else if (state.step === 3) {
-            const rad = state.time;
-            const pt = getEndPoint(rad);
+            const phi3Rad = state.phi3 * Math.PI / 180;
+            const totalT = 4 * Math.PI;
+            const rad = state.time3 + phi3Rad;
+            const radius = state.amp3;
+            const pt = getEndPoint(rad, radius);
 
             drawArrow(cx, cy, pt.x, pt.y, '#0ea5e9', 6);
             ctx.fillStyle = '#0ea5e9'; ctx.font = 'bold 18px sans-serif'; ctx.textAlign = 'left';
@@ -466,21 +534,14 @@ function draw() {
             ctx.beginPath(); ctx.arc(cx, pt.y, 10, 0, Math.PI*2);
             ctx.fillStyle = '#ec4899'; ctx.fill();
 
-            const windowSize = 4 * Math.PI;
-            const t_now = state.time;
-
+            // 绘制完整波形：t从0到4π，铺满整个时域区域
             ctx.beginPath();
             let drawingStarted = false;
             for (let i = 0; i <= rightW; i++) {
-                let t = (t_now < windowSize)
-                    ? (i / rightW) * windowSize
-                    : t_now - windowSize + (i / rightW) * windowSize;
-                if (t > t_now) continue;
-
-                const val = Math.cos(t);
+                const t = (i / rightW) * totalT;
+                const val = waveFunc(t, phi3Rad);
                 const x = rightStart + i;
-                const y = cy - val * 140;
-
+                const y = cy - val * state.amp3;
                 if (!drawingStarted) {
                     ctx.moveTo(x, y);
                     drawingStarted = true;
@@ -490,8 +551,10 @@ function draw() {
             }
             ctx.strokeStyle = '#ec4899'; ctx.lineWidth = 5; ctx.stroke();
 
-            const scanX = (t_now < windowSize) ? rightStart + (t_now / windowSize) * rightW : rightStart + rightW;
-            const scanY = cy - Math.cos(t_now) * 140;
+            // 当前时刻红点：从左向右循环移动
+            const tNow = state.time3;
+            const scanX = rightStart + (tNow / totalT) * rightW;
+            const scanY = cy - waveFunc(tNow, phi3Rad) * state.amp3;
 
             ctx.setLineDash([6, 6]);
             drawLine(cx, pt.y, scanX, scanY, 'rgba(236,72,153,0.4)', 2);
@@ -506,9 +569,11 @@ function draw() {
         } else if (state.step === 4) {
             const radI = state.time;
             const radU = state.time + state.phi4 * Math.PI / 180;
+            const rU = state.amp1;
+            const rI = state.amp1 * 0.7;
 
-            const ptI = getEndPoint(radI);
-            const ptU = getEndPoint(radU);
+            const ptI = getEndPoint(radI, rI);
+            const ptU = getEndPoint(radU, rU);
 
             if (state.poePassed) {
                 drawArrow(cx, cy, ptI.x, ptI.y, '#10b981', 6);
@@ -535,9 +600,9 @@ function draw() {
                         : t_now - windowSize + (i / rightW) * windowSize;
                     if (t > t_now) continue;
 
-                    const val = Math.cos(t + phaseShift);
+                    const val = waveFunc(t, phaseShift);
                     const x = rightStart + i;
-                    const y = cy - val * 140;
+                    const y = cy - val * state.amp1;
 
                     if (!drawingStarted) {
                         ctx.moveTo(x, y);
@@ -559,8 +624,41 @@ function draw() {
     requestAnimationFrame(draw);
 }
 
-requestAnimationFrame(draw);
-setTimeout(resize, 100);
+// 【修复】滑块函数，不再共用val参数，每次读取两个滑块实时值
+window.onMoveStep1 = function() {
+    state.amp1 = parseInt(document.getElementById('slider-amp1').value);
+    state.phi1 = parseInt(document.getElementById('slider-phi1').value);
+    document.getElementById('val-amp1').textContent = state.amp1;
+    document.getElementById('val-phi1').textContent = state.phi1 + '°';
+    if (!state.hasMovedStep1) {
+        state.hasMovedStep1 = true;
+        const btn = document.getElementById('btn-next-1');
+        btn.classList.remove('locked');
+        btn.textContent = '完成观察，进入下一步';
+        logOp("Step1拖动滑块，首次操作");
+    }
+}
+
+window.onMoveStep2 = function(val) {
+    state.angle2 = parseInt(val);
+    document.getElementById('val-angle2').textContent = state.angle2 + '°';
+    if (!state.hasMovedStep2 && state.angle2 > 0) {
+        state.hasMovedStep2 = true;
+        const btn = document.getElementById('btn-next-2');
+        btn.classList.remove('locked');
+        btn.textContent = '完成观察，进入下一步';
+        logOp("Step2拖动滑块，首次操作");
+    }
+}
+
+// 新增：Step3滑块回调
+window.onMoveStep3 = function() {
+    state.amp3 = parseInt(document.getElementById('slider-amp3').value);
+    state.phi3 = parseInt(document.getElementById('slider-phi3').value);
+    document.getElementById('val-amp3').textContent = state.amp3;
+    document.getElementById('val-phi3').textContent = state.phi3 + '°';
+    logOp("Step3调整幅值/初相");
+}
 
 window.switchTab = function(n) {
     state.step = n;
@@ -581,6 +679,7 @@ window.switchTab = function(n) {
         document.getElementById('play-bar').style.display = 'none';
         state.isPlaying = false;
     }
+    logOp(`切换到Step${n}`);
 }
 
 window.togglePlay = function() {
@@ -588,30 +687,28 @@ window.togglePlay = function() {
     document.getElementById('btn-play').textContent = state.isPlaying ? '⏸ 暂停旋转' : '▶ 开始旋转';
 }
 
-window.onMoveStep1 = function(val) {
-    state.phi1 = parseInt(val);
-    document.getElementById('val-phi1').textContent = state.phi1 + '°';
-    if (!state.hasMovedStep1) {
-        state.hasMovedStep1 = true;
-        const btn = document.getElementById('btn-next-1');
-        btn.classList.remove('locked');
-        btn.textContent = '完成观察，进入下一步';
+window.switchBase = function(mode){
+    state.baseFunc = mode;
+    document.getElementById('btn-cos').classList.toggle('active', mode==='cos');
+    document.getElementById('btn-sin').classList.toggle('active', mode==='sin');
+    logOp(`切换基准函数：${mode}`);
+}
+window.toggleT0Line = function(){
+    state.showT0Line = !state.showT0Line;
+    const btn = document.getElementById('btn-t0-show');
+    if(state.showT0Line){
+        btn.textContent = "显示 t=0 参考线";
+        btn.classList.add('active');
+    }else{
+        btn.textContent = "隐藏 t=0 参考线";
+        btn.classList.remove('active');
     }
+    logOp(`t0参考线：${state.showT0Line?"显示":"隐藏"}`);
 }
 
-window.onMoveStep2 = function(val) {
-    state.angle2 = parseInt(val);
-    document.getElementById('val-angle2').textContent = state.angle2 + '°';
-    if (!state.hasMovedStep2 && state.angle2 > 0) {
-        state.hasMovedStep2 = true;
-        const btn = document.getElementById('btn-next-2');
-        btn.classList.remove('locked');
-        btn.textContent = '完成观察，进入下一步';
-    }
-}
-
-window.showToast = function() {
+window.showToast = function(msg="请先拖动滑块观察变化！") {
     const toast = document.getElementById('toast');
+    toast.innerText = msg;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 2000);
 }
@@ -642,6 +739,7 @@ window.unlockTab4 = function() {
     switchTab(4);
     state.isPlaying = true;
     document.getElementById('btn-play').textContent = '⏸ 暂停旋转';
+    logOp("解锁Step4");
 }
 
 window.closeMicroPoe = function() {
@@ -657,12 +755,17 @@ window.closePoe = function() {
 window.checkMicroPoe = function(ans) {
     const fb = document.getElementById('micro-poe-feedback');
     const btns = document.querySelectorAll('#micro-poe-options .opt-btn');
+    // 每次点击先清空全部按钮样式、反馈
+    btns.forEach(b=>b.classList.remove('correct','wrong'));
+    fb.className = '';
+    fb.innerHTML = '';
 
     if (ans === 'angle') {
         btns[1].classList.add('correct');
         fb.style.background = 'var(--green)';
         fb.innerHTML = '✅ 正确！长度自始至终都没变，只是角度转了。';
         fb.className = 'show';
+        logOp("Step2微POE回答正确");
 
         setTimeout(() => {
             document.getElementById('micro-poe-modal').classList.remove('active');
@@ -676,10 +779,7 @@ window.checkMicroPoe = function(ans) {
         fb.style.background = 'var(--pink)';
         fb.innerHTML = '❌ 长度变了吗？请返回去重新拖动滑块，仔细看看箭头的长短。';
         fb.className = 'show';
-
-        setTimeout(() => {
-            btns[0].classList.remove('wrong');
-        }, 800);
+        logOp("Step2微POE回答错误");
     }
 }
 
@@ -692,18 +792,24 @@ window.openPoe = function() {
     });
     document.getElementById('poe-feedback').className = '';
     document.getElementById('poe-feedback').textContent = '';
+    logOp("打开Step4 POE预测弹窗");
 }
 
 window.checkPoe = function(ans) {
     if (state.poePassed) return;
     const feedbackEl = document.getElementById('poe-feedback');
     const btns = document.querySelectorAll('#poe-options .opt-btn');
+    // 每次点击先清空全部按钮样式、反馈
+    btns.forEach(b=>b.classList.remove('correct','wrong'));
+    feedbackEl.className = '';
+    feedbackEl.innerHTML = '';
 
     if (ans === 'lead') {
         btns[0].classList.add('correct');
         feedbackEl.style.background = 'var(--green)';
         feedbackEl.innerHTML = '✅ <b>预测正确！</b><br>波形图上越靠左（先发生），在逆时针旋转的相量图上就越处于逆时针前方。';
         feedbackEl.className = 'show';
+        logOp("Step4 POE回答正确");
 
         setTimeout(() => {
             document.getElementById('poe-modal').classList.remove('active');
@@ -722,44 +828,65 @@ window.checkPoe = function(ans) {
         }
         feedbackEl.style.background = 'var(--pink)';
         feedbackEl.className = 'show';
-
-        setTimeout(() => {
-            btns.forEach(b => b.classList.remove('wrong'));
-        }, 800);
+        logOp("Step4 POE回答错误");
     }
 }
 
 window.buildReport = function() {
     const warnBox = document.getElementById('warn-box');
     const ta = document.getElementById('report-text');
+    const conclusion = document.getElementById('input-conclusion').value.trim() || "（学生未填写结论）";
+    const doubt = document.getElementById('input-doubt').value.trim() || "（学生无疑惑）";
 
     if (!state.poePassed) {
-        ta.classList.remove('show');
+        ta.value = "";
+        ta.style.display = "none";
         warnBox.innerHTML = '❌ 拦截：请先在 Step 4 完成并答对 POE 预测题目！';
         warnBox.classList.add('show');
         return;
     }
 
     warnBox.classList.remove('show');
-    const text = `【电路原理·相量法分步探究 学情数据】
-- 探究过程：
-  1. 我明确了核心定义：复数是通用数学对象；相量是专门表征正弦稳态量的特殊复数，U̇ = Um ∠ φ，冻结在 t=0 时刻。
-  2. 给相量（特殊复数）乘上旋转因子 e<sup>jωt</sup>后，变成了旋转矢量，它在实轴（垂直方向）上的投影就是时域的瞬时值。
-  3. 我完成了超前/滞后的探究：当电压超前电流 90° 时，红色电压波形比绿色电流波形先到达峰值。
-- 探究记录：
-  在 Step 2 微预测中，我经历了 ${state.microPoeErrorCount} 次失误。
-  在 Step 4 深度 POE（波形反推相量）中，我经历了 ${state.poeErrorCount} 次失误。
-- 结论：
-  静止相量（特殊复数）的夹角，严格等于时域波形在时间轴上平移的时间差。`;
-
+    const text = `【电路原理·相量法分步探究 学情记录】
+会话标识：${SESSION_ID}
+探究基准：${state.baseFunc}
+分步记录：
+Step1：认识静止相量，拖动初相φ=${state.phi1}°，幅值Uₘ=${state.amp1}
+Step2：旋转矢量探究，微预测失误次数：${state.microPoeErrorCount}
+Step3：动态投影，φ=${state.phi3}°，Uₘ=${state.amp3}
+Step4：波形反推相量POE，预测失误次数：${state.poeErrorCount}
+学生结论：${conclusion}
+学生疑惑：${doubt}
+操作日志：${JSON.stringify(state.opLog)}`;
+    ta.style.display = "block";
     ta.value = text;
-    ta.classList.add('show');
+    logOp("生成学情报告");
 }
 
-window.onload = function() {
-    switchTab(1);
-    setTimeout(resize, 100);
+window.copyReport = async function(){
+    const ta = document.getElementById('report-text');
+    if(!ta.value.trim()){
+        showToast("请先生成学情文本");
+        return;
+    }
+    try{
+        await navigator.clipboard.writeText(ta.value);
+        showToast("✅ 已复制学情文本");
+    }catch(e){
+        showToast("复制失败，请手动选中复制");
+    }
 }
+
+window.saveSnapshot = function(){
+    const link = document.createElement('a');
+    link.download = `phasor-snapshot-${SESSION_ID}.html`;
+    link.href = location.href;
+    link.click();
+    showToast("快照已保存");
+}
+
+// 启动渲染循环
+draw();
 </script>
 </body>
 </html>
